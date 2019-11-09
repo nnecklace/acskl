@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>acskl.server</groupId>
-  <artifactId>acskl-server</artifactId>
+  <artifactId>acskl.server</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <name>acskl-server</name>
