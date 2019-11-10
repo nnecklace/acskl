@@ -3,4 +3,5 @@
 | Time | Task                      |
 |:-----|:--------------------------|
 | 2    | requirement specification |
-| 2    | sum                       |
+| 4    | JDBC Database integration |
+| 6    | sum                       |
