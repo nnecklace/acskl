@@ -26,3 +26,5 @@ hs_err_pid*
 .vscode
 .project
 .settings
+*.sqlite
+*.db
