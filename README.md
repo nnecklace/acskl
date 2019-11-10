@@ -14,3 +14,8 @@ Again, make sure you are in the server directory when running this command.
 
 To run and compile the server, cd into to `server` directory and run `mvn compile exec:java -Dexec.mainClass=acskl.server.App`
 
+### Server tests
+
+Run full test coverage report 
+
+```mvn test```
