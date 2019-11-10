@@ -1,0 +1,5 @@
+
+CREATE TABLE users IF NOT EXISTS (
+    id int PRIMARY KEY AUTO_INCREMENT,
+    name varchar(20) NOT NULL
+);
