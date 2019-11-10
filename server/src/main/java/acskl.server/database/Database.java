@@ -15,7 +15,7 @@ public class Database {
         try {
             db = DriverManager.getConnection(CONNECTION_STRING);
         } catch (SQLException exception) {
-            System.err.println("Could not establish connection to database");
+            System.err.println("Could not establish connection to database " + exception.getMessage());
         }
 
         return this;
@@ -41,5 +41,17 @@ public class Database {
         if (statement != null) {
             statement.execute();
         }
+    }
+
+    public void close() throws SQLException {
+        db.close();
+    }
+
+    public PreparedStatement getStatement() {
+        return statement;
+    }
+
+    public Connection getDb() {
+        return db;
     }
 }
