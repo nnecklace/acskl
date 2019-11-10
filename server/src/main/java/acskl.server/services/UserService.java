@@ -2,7 +2,7 @@ package acskl.server.services;
 
 import acskl.server.models.User;
 import java.sql.SQLException;
-import acskl.server.database.IDb;
+import acskl.server.database.Database;
 
 public class UserService {
     private Database database;
