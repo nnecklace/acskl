@@ -16,6 +16,14 @@ To run and compile the server, cd into to `server` directory and run `mvn compil
 
 ### Server tests
 
-Run full test coverage report 
+Run full test coverage report for the server by cd:ing into `server` directory and running:
 
 ```mvn test```
+
+To generate `jacoco` report run:
+
+```mvn jacoco:prepare-agent install```
+
+and then:
+
+```mvn test jacoco:report``` 
