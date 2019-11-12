@@ -1,5 +1,4 @@
-package acskl.server.database;
-
+package acskl.server.database; 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -43,8 +42,12 @@ public class Database {
         }
     }
 
-    public void close() throws SQLException {
-        db.close();
+    public void close() {
+        try {
+            if (db != null) db.close();
+        } catch (SQLException exception) {
+            System.err.println("Could not close connection to database " + exception.getMessage());
+        }
     }
 
     public PreparedStatement getStatement() {

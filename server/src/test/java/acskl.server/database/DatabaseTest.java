@@ -19,10 +19,15 @@ public class DatabaseTest {
         this.db = new Database();
     }
 
+    @After
+    public void tearDown() {
+        db.close();
+    }
+
     @Test
     public void testsSuccessfulDbConnection() {
         Database k = db.establish();
-        assertTrue(db.getDb() != null);
+        assertTrue(k.getDb() != null);
     }
 
     @Test
