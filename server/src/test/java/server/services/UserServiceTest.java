@@ -1,4 +1,4 @@
-package acskl.server.services;
+package server.services;
 
 import static org.junit.Assert.assertTrue;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import acskl.server.database.Database;
+import server.database.Database;
 
 public class UserServiceTest {
     private UserService u;

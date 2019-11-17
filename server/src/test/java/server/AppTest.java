@@ -1,4 +1,4 @@
-package acskl.server;
+package server;
 
 import static org.junit.Assert.assertTrue;
 

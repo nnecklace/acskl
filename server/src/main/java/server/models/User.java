@@ -1,4 +1,4 @@
-package acskl.server.models;
+package server.models;
 
 public class User {
     private String name;

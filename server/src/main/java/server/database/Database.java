@@ -1,13 +1,11 @@
-package acskl.server.database; 
+package server.database; 
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
-import java.util.Arrays;
 
 public class Database {
     private String CONNECTION_STRING = "jdbc:sqlite:database.db";

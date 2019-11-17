@@ -1,4 +1,4 @@
-package acskl.server;
+package server;
 
 public class App {
     public static void main(String[] args) {

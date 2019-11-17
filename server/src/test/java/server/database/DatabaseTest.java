@@ -1,4 +1,4 @@
-package acskl.server.database;
+package server.database;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
 
-import acskl.server.database.Database;
-import acskl.server.services.UserService;
+import server.database.Database;
+import server.services.UserService;
 
 public class DatabaseTest {
     private Database db;

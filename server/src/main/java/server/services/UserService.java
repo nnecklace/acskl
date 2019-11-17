@@ -1,11 +1,6 @@
-package acskl.server.services;
+package server.services;
 
-import acskl.server.models.User;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import acskl.server.database.Database;
+import server.database.Database;
 
 public class UserService {
     private Database database;
