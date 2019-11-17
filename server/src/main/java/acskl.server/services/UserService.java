@@ -1,24 +1,41 @@
 package acskl.server.services;
 
 import acskl.server.models.User;
+
+import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import acskl.server.database.Database;
 
 public class UserService {
     private Database database;
+    // Username is reserved for testing purposes
+    public static String RESERVED_USERNAME = "thundercougarfalconbird";
 
     public UserService(Database database) {
         this.database = database;
     }
 
-    public void create(User user) {
-        try {
-            database.establish()
-                .query("INSERT INTO users VALUES (?)")
-                .addValue(user.getName())
-                .execute();
-        } catch(SQLException exception) {
-            System.err.println("Could not create user " + exception.getMessage());
-        }
+    public boolean create(String username) {
+        if (RESERVED_USERNAME.equals(username)) return false;
+
+        boolean created = database.establish()
+                            .query("INSERT INTO users (name) VALUES (?)")
+                            .addValue(username)
+                            .execute();
+        database.close();
+
+        return created;
+    }
+
+    public boolean login(String username) {
+        boolean exists = database.establish()
+                            .query("SELECT name FROM users WHERE name = ?")
+                            .addValue(username)
+                            .execute();
+
+        database.close();
+
+        return exists;
     }
 }
