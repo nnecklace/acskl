@@ -4,4 +4,6 @@
 |:-----|:--------------------------|
 | 2    | requirement specification |
 | 4    | JDBC Database integration |
-| 6    | sum                       |
+| 2    | Database layer refactor   |
+| 4    | Login and Registration    |
+| 12   | sum                       |
