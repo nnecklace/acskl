@@ -2,6 +2,12 @@
 
 Acskl -- _anagram for slack_ -- is a simple tcp server client chat application built with Java. The app allows you to send message from a tcp message client to the tcp server. This application is also my submission for Helsinki Univeristiy's _Ohjelmisto tekniikka (Software technique)_ course. 
 
+## Documentation
+
+[Requirement Specification](https://github.com/nnecklace/acskl/blob/master/documents/requirement-specification.md)
+
+[Hour reporting](https://github.com/nnecklace/acskl/blob/master/documents/hours.md)
+
 ## Server 
 
 Before setting up the server. Make sure you have sqlite3 installed. 
