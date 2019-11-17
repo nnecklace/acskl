@@ -1,4 +1,6 @@
-package acskl.client;
+package client;
+
+import javafx.application.Application;
 
 /**
  * Hello world!
