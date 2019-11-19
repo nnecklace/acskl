@@ -43,6 +43,7 @@ public class Database {
         return this;
     }
 
+    // TODO: This might not be necessary
     public boolean execute() {
         try {
             if (statement != null) {
