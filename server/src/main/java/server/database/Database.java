@@ -1,12 +1,24 @@
-package server.database; 
+package server.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+import server.models.Model;
+
+// TODO: Remove println and add logger class to write to error file
 public class Database {
     private String CONNECTION_STRING = "jdbc:sqlite:database.db";
     private Connection db;
@@ -77,6 +89,35 @@ public class Database {
         }
 
         return this;
+    }
+
+    public <T extends Object & Model> List<T> asList(Class<T> model) {
+        if (result == null) return new ArrayList<>();
+        List<T> values = new ArrayList<>();
+        try {
+            ResultSetMetaData resultMetaData = result.getMetaData();
+            Map<String, Object> entity = new HashMap<>();
+
+            while (result.next()) {
+                // This would be the correct way of casting with generics
+                // However, jdbc sqlite does not support this feature...
+
+                // T value = result.getObject(1, model); // throws SQLFeatureNotSupportedException
+                // values.add(value);
+
+                // So we use jacksons Object mapper instead..
+
+               for (int i = 1; i <= resultMetaData.getColumnCount(); ++i) {
+                   entity.put(resultMetaData.getColumnLabel(i), result.getObject(i));
+               }
+               final ObjectMapper mapper = new ObjectMapper();
+               values.add(mapper.convertValue(entity, model));
+            }
+        } catch (SQLException exception) {
+            System.err.println("Could not create list of entities: " + exception.getMessage());
+        }
+
+        return values;
     }
 
     public void close() {

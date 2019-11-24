@@ -3,8 +3,10 @@ package server.database;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.sql.ParameterMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.After;
@@ -12,6 +14,7 @@ import org.junit.Before;
 
 import server.database.Database;
 import server.services.UserService;
+import server.models.User;
 
 public class DatabaseTest {
     private Database db;
@@ -115,10 +118,44 @@ public class DatabaseTest {
         }
 
         boolean b = k.query("DELETE FROM users WHERE name = ?")
-                        .addValue(UserService.RESERVED_USERNAME)
+                        .addValue(1, UserService.RESERVED_USERNAME)
                         .execute();
 
         assertTrue("User not deleted", b);
 
+    }
+
+    @Test
+    public void testListingEntities() throws SQLException {
+        Database k = db.establish();
+
+        k.query("INSERT INTO users (name) VALUES (?)")
+            .addValue(1, UserService.RESERVED_USERNAME)
+            .execute();
+        
+        List<User> users = k.query("SELECT * FROM users")
+                                .executeReturning()
+                                .asList(User.class);
+        
+        k.query("DELETE FROM users WHERE name = ?")
+            .addValue(1, UserService.RESERVED_USERNAME)
+            .execute();
+            
+        User user = users.stream().filter(u -> {
+            return UserService.RESERVED_USERNAME.equals(u.getName());
+        }).findFirst().orElse(null);
+
+        assertTrue("Users list should not be empty", !users.isEmpty());
+        assertTrue("Users list should contain test user entity", user != null);
+    }
+
+    @Test
+    public void testListingShouldBeEmpty() throws SQLException {
+        Database k = db.establish();
+        
+        List<User> users = k.query("SELECT * FROM users")
+                                .asList(User.class);
+
+        assertTrue("Users list should be null", users != null);
     }
 }
