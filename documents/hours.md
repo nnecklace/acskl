@@ -6,4 +6,6 @@
 | 4    | JDBC Database integration |
 | 2    | Database layer refactor   |
 | 4    | Login and Registration    |
-| 12   | sum                       |
+| 4    | Message creation          |
+| 1    | TCP Server Setup          |
+| 17   | sum                       |
