@@ -29,3 +29,5 @@ hs_err_pid*
 *.sqlite
 *.db
 */**/bin/
+.DS_Store
+
