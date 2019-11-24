@@ -8,28 +8,42 @@ Acskl -- _anagram for slack_ -- is a simple tcp server client chat application b
 
 [Hour reporting](https://github.com/nnecklace/acskl/blob/master/documents/hours.md)
 
-## Server 
+[Server Manual](https://github.com/nnecklace/acskl/blob/master/documents/manual-server.md)
 
-Before setting up the server. Make sure you have sqlite3 installed. 
+## Instructions
 
-To start the server you first have to make sure you have the database setup. The server assumes a sqlite database. `touch database.db` will create a sample database (Note* make sure you are in the server directory when creating the database). After creating the database you have to run the migrations for the database. 
+Detailed instructions on setup can be found in the both client and server manuals located in `documents`.
+
+## Commands
+
+### Server 
+
+Make sure you are in the `server` directory for these commands to work.
+
+#### Database setup
+
+Create a sample database.
+
+```touch database.db``` 
+
+Setup database with migrations
 
 ```sqlite3 database.db < migrations/migrations.sql``` 
 
-Again, make sure you are in the server directory when running this command.
+#### Compile & Run
 
-To run and compile the server, cd into to `server` directory and run `mvn compile exec:java -Dexec.mainClass=server.App`
+```mvn compile exec:java -Dexec.mainClass=server.App```
 
-### Server tests
+#### Tests
 
-Run full test coverage report for the server by cd:ing into `server` directory and running:
+Run tests
 
 ```mvn test```
 
-To generate `jacoco` report run:
+To generate `jacoco` report install the agent with:
 
 ```mvn jacoco:prepare-agent install```
 
-and then:
+Generate report
 
 ```mvn test jacoco:report``` 
