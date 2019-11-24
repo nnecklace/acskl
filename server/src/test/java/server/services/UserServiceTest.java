@@ -29,7 +29,7 @@ public class UserServiceTest {
                 if (q.contains("SELECT name FROM")) login = true;
                 return this; 
             }
-            public Database addValue(String v) {
+            public <T> Database addValue(int p, T v) {
                 if (login) {
                     willPass = usernames.contains(v);
                 } else {

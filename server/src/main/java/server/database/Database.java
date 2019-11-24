@@ -33,9 +33,17 @@ public class Database {
         return this;
     }
 
-    public Database addValue(String value) {
+    public <T> Database addValue(int position, T value) {
         try {
-            if (statement != null) statement.setString(1, value);
+            if (statement != null) {
+                if (value instanceof String) {
+                    statement.setString(position, (String)value);
+                } else if (value instanceof Integer) {
+                    statement.setInt(position, (Integer)value);
+                } else if (value instanceof Long) {
+                    statement.setLong(position, (Long)value);
+                }
+            }
         } catch(SQLException exception) {
             System.err.println("Could not add value " + value + " " + exception.getCause());
         }

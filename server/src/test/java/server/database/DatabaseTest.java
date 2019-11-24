@@ -46,19 +46,63 @@ public class DatabaseTest {
     }
 
     @Test
+    public void testAddingGenericValue() throws SQLException {
+        Database k = db.establish();
+        k.query("SELECT * FROM users WHERE name = ?");
+        k.addValue(1, "James");
+        ParameterMetaData data = k.getStatement().getParameterMetaData();
+        int paramCount = data.getParameterCount();
+        // this is the best we can do since sqlite hides all parameter values and their types in jdbc
+        // calling getParameterType() or getParameterTypeName() will always resort in VARCHAR or String since weverything is hidden
+        assertTrue("Parameter count was expected to be " + 1 + " but was " + paramCount, paramCount == 1);
+    }
+
+    @Test
+    public void testAddingMultipleGenericValues() throws SQLException {
+        Database k = db.establish();
+        k.query("SELECT content,id,timestamp FROM messages WHERE content = ? AND id = ? AND timestamp = ?");
+        k.addValue(1, "Lmao");
+        k.addValue(2, 1);
+        k.addValue(3, 1L);
+        ParameterMetaData data = k.getStatement().getParameterMetaData();
+        int paramCount = data.getParameterCount();
+        int expectedCount = 3;
+
+        assertTrue("Parameter count was expected to be " + expectedCount + " but was " + paramCount, paramCount == expectedCount);
+    }
+
+    @Test
+    public void testAddValueDoNothingIfNoQueryExists() {
+        Database k = db.establish().addValue(1, "james");
+        assertTrue("No values should have been added", k.getStatement() == null);
+    }
+
+    @Test
+    public void testExecuteDoesNothingIfNoQueryExists() {
+        boolean no  = db.establish().execute();
+        assertTrue("No queries should have been executed", !no);
+    }
+
+    @Test
+    public void testExecuteReturningDoesNothingIfNoQueryExists() {
+        Database k  = db.establish().executeReturning();
+        assertTrue("No results should have been returned", k.getResult() == null);
+    }
+
+    @Test
     public void testQueryExecution() throws SQLException {
         // Note! JUnit executes tests in arbitrary order
         // ideally tests cases should be separeted but we need to execute these in precise order
         Database k = db.establish();
 
         boolean a = k.query("INSERT INTO users (name) VALUES (?)")
-                        .addValue(UserService.RESERVED_USERNAME)
+                        .addValue(1, UserService.RESERVED_USERNAME)
                         .execute();
 
         assertTrue("User was not created", a);
 
         ResultSet r = k.query("SELECT * FROM users WHERE name = ?")
-                            .addValue(UserService.RESERVED_USERNAME)
+                            .addValue(1, UserService.RESERVED_USERNAME)
                             .executeReturning()
                             .getResult();
 

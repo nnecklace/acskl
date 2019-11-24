@@ -16,7 +16,7 @@ public class UserService {
 
         boolean created = database.establish()
                             .query("INSERT INTO users (name) VALUES (?)")
-                            .addValue(username)
+                            .addValue(1, username)
                             .execute();
         database.close();
 
@@ -26,7 +26,7 @@ public class UserService {
     public boolean login(String username) {
         boolean exists = database.establish()
                             .query("SELECT name FROM users WHERE name = ?")
-                            .addValue(username)
+                            .addValue(1, username)
                             .execute();
 
         database.close();
