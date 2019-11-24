@@ -8,6 +8,6 @@ Both projects are built using a hierarchical structure. Add class in a package b
 
 ## Packages
 
-Server package hierarchi
+Server package hierarchy
 
 <img src="https://raw.githubusercontent.com/nnecklace/acskl/master/documents/diagrams/packages-server.png" width="400px"/>
