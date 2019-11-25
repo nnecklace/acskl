@@ -49,3 +49,9 @@ To generate `jacoco` report install the agent with:
 Generate report
 
 ```mvn test jacoco:report``` 
+
+#### Checkstyle
+
+Run and generate checkstyle report
+
+```mvn jxr:jxr checkstyle:checkstyle```

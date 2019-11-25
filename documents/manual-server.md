@@ -30,7 +30,7 @@ Run all unit and integration test with the following command
 
 ```mvn test```
 
-#### Jacoco report
+### Jacoco report
 
 To generate `jacoco` first install the `jacoco:prepare-agent`
 
@@ -39,3 +39,16 @@ To generate `jacoco` first install the `jacoco:prepare-agent`
 Then create a test coverage report with the following command
 
 ```mvn test jacoco:report``` 
+
+A jacoco report will be generated and can be found in `target/site/jacoco/index.html`
+
+### Checkstyle
+
+The project uses checkstyle for making sure that the code follows the specified code formatting style.
+`checkstyle.xml` includes the rules that the project follows.
+
+Generate a checkstyle report with the following command
+
+```mvn jxr:jxr checkstyle:checkstyle```
+
+A checkstyle report will be generated and can be found in `target/site/checkstyle.html`
