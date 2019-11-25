@@ -9,5 +9,5 @@
 | 3    | Database layer listing feature |
 | 4    | Message creation               |
 | 2    | TCP Server Setup               |
-| 1    | Architecture                   | 
-| 22   | sum                            |
+| 2    | Architecture                   | 
+| 23   | sum                            |
