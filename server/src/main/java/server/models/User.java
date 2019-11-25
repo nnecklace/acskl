@@ -8,7 +8,7 @@ public class User implements Model {
     // This is for jackson databind ObjectMapper
     public User() {}
 
-    public User (String name) {
+    public User(String name) {
         this.name = name;
     }
 

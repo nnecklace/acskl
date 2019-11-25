@@ -12,7 +12,9 @@ public class UserService {
     }
 
     public boolean create(String username) {
-        if (RESERVED_USERNAME.equals(username)) return false;
+        if (RESERVED_USERNAME.equals(username)) {
+            return false;
+        }
 
         boolean created = database.establish()
                             .query("INSERT INTO users (name) VALUES (?)")

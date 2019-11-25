@@ -37,7 +37,9 @@ public class Database {
 
     public Database query(String query) {
         try {
-            if (db != null) statement = db.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            if (db != null) {
+                statement = db.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            }
         } catch (SQLException exception) {
             System.err.println("Could not create query: " + query + " " + exception.getMessage());
         }
@@ -49,14 +51,14 @@ public class Database {
         try {
             if (statement != null) {
                 if (value instanceof String) {
-                    statement.setString(position, (String)value);
+                    statement.setString(position, (String) value);
                 } else if (value instanceof Integer) {
-                    statement.setInt(position, (Integer)value);
+                    statement.setInt(position, (Integer) value);
                 } else if (value instanceof Long) {
-                    statement.setLong(position, (Long)value);
+                    statement.setLong(position, (Long) value);
                 }
             }
-        } catch(SQLException exception) {
+        } catch (SQLException exception) {
             System.err.println("Could not add value " + value + " " + exception.getCause());
         }
 
@@ -70,7 +72,9 @@ public class Database {
                 statement.execute();
                 ResultSet result = statement.getGeneratedKeys();
 
-                if (result == null) return false;
+                if (result == null) {
+                    return false;
+                }
 
                 return result.next();
             }
@@ -83,7 +87,9 @@ public class Database {
 
     public Database executeReturning() {
         try {
-            if (statement != null) result = statement.executeQuery();
+            if (statement != null) {
+                result = statement.executeQuery();
+            }
         } catch (SQLException exception) {
             System.err.println("Could not perform query: " + exception.getMessage());
         }
@@ -92,8 +98,12 @@ public class Database {
     }
 
     public <T extends Object & Model> List<T> asList(Class<T> model) {
-        if (result == null) return new ArrayList<>();
+        if (result == null) {
+            return new ArrayList<>();
+        } 
+
         List<T> values = new ArrayList<>();
+        
         try {
             ResultSetMetaData resultMetaData = result.getMetaData();
             Map<String, Object> entity = new HashMap<>();
@@ -107,11 +117,11 @@ public class Database {
 
                 // So we use jacksons Object mapper instead..
 
-               for (int i = 1; i <= resultMetaData.getColumnCount(); ++i) {
-                   entity.put(resultMetaData.getColumnLabel(i), result.getObject(i));
-               }
-               final ObjectMapper mapper = new ObjectMapper();
-               values.add(mapper.convertValue(entity, model));
+                for (int i = 1; i <= resultMetaData.getColumnCount(); ++i) {
+                    entity.put(resultMetaData.getColumnLabel(i), result.getObject(i));
+                }
+                final ObjectMapper mapper = new ObjectMapper();
+                values.add(mapper.convertValue(entity, model));
             }
         } catch (SQLException exception) {
             System.err.println("Could not create list of entities: " + exception.getMessage());
@@ -122,9 +132,15 @@ public class Database {
 
     public void close() {
         try {
-            if (result != null) result.close();
-            if (statement != null) statement.close();
-            if (db != null) db.close();
+            if (result != null) {
+                result.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (db != null) {
+                db.close();
+            }
         } catch (SQLException exception) {
             System.err.println("Could not close connection to database " + exception.getMessage());
         }

@@ -13,7 +13,9 @@ public class MessageService {
     }
 
     public boolean create(Message message) {
-        if (message.getContent().length() > 1000) return false;
+        if (message.getContent().length() > 1000) {
+            return false;
+        }
 
         boolean created = database.establish()
                                 .query("INSERT INTO messages (content,timestamp,userId) VALUES(?,?,?)")
