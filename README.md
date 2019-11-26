@@ -55,3 +55,19 @@ Generate report
 Run and generate checkstyle report
 
 ```mvn jxr:jxr checkstyle:checkstyle```
+
+### Client
+
+Make sure you are in the `client` directory when running the following commands.
+
+#### Compile & Run
+
+```mvn compile exec:java -Dexec.mainClass=client.App```
+
+#### Test
+
+Run tests.
+
+```mvn test```
+
+No jacoco reports can be generated for the `client` as the UI doesn't require it.
