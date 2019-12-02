@@ -18,17 +18,21 @@ public class App {
         while (true) {
             System.out.println("Server listening on port 6789");
             Socket connectionSocket = welcomeSocket.accept();
+            System.out.println("Someone connected");
             while (true) {
                 BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+                System.out.println("Waiting for message");
                 String input = inFromClient.readLine();
-                String response = interceptor.parse(input);
-                DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-                outToClient.writeBytes(response + "\n");
+                System.out.println(input + " recevied");
 
                 if (input == null) {
                     connectionSocket.close();
                     break;
                 }
+
+                String response = interceptor.parse(input);
+                DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+                outToClient.writeBytes(response + "\n");
             }
         }
     }
