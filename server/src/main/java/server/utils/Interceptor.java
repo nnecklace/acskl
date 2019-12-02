@@ -25,12 +25,12 @@ public class Interceptor {
     }
 
     private String response(boolean success, String command, String action, String[] parameters) {
-        String message = command+":"+action+":"+String.join(":", parameters);
+        String message = command + ":" + action + ":" + String.join(":", parameters);
         if (success) {
-            return "S:"+message;
+            return "S:" + message;
         }
 
-        return "E:"+message;
+        return "E:" + message;
     }
 
     private String invalid() {
@@ -75,7 +75,7 @@ public class Interceptor {
         String command = instructions[0];
         String action = instructions[1];
 
-        if (!validCommands.contains(command) || !validActions.contains(action)){
+        if (!validCommands.contains(command) || !validActions.contains(action)) {
             return invalid();
         }
 
