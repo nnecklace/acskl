@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import server.database.Database;
+import server.models.Model;
+import server.models.User;
 
 public class UserServiceTest {
     private UserService u;
@@ -26,7 +28,7 @@ public class UserServiceTest {
             }
             public Database establish() { return this; }
             public Database query(String q) {
-                if (q.contains("SELECT name FROM")) login = true;
+                if (q.contains("SELECT * FROM")) login = true;
                 return this; 
             }
             public <T> Database addValue(int p, T v) {
@@ -39,6 +41,14 @@ public class UserServiceTest {
                 return this; 
             }
             public boolean execute() { return willPass; }
+            public Database executeReturning() { return this; }
+            public <T extends Object & Model> T asValue(Class<T> model) {
+                if (willPass) {
+                    return (T) new User("Gabriel");
+                }
+
+                return null;
+            }
             public void close() {}
         }.start();
         u = new UserService(db);
@@ -77,5 +87,19 @@ public class UserServiceTest {
         boolean a = u.login("Simon");
 
         assertTrue("User could login with invalid username", !a);
+    }
+
+    @Test
+    public void testFindUserByUsername() {
+        User user = u.findByUsername("Pekka");
+
+        assertTrue("Valid user should have been found", user != null);
+    }
+
+    @Test
+    public void testDontFindUserByUsername() {
+        User user = u.findByUsername("Samuel");
+
+        assertTrue("Valid user should not have been found", user == null);
     }
 }

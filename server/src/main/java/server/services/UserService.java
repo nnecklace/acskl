@@ -1,6 +1,7 @@
 package server.services;
 
 import server.database.Database;
+import server.models.User;
 
 public class UserService {
     private Database database;
@@ -25,14 +26,22 @@ public class UserService {
         return created;
     }
 
-    public boolean login(String username) {
-        boolean exists = database.establish()
-                            .query("SELECT name FROM users WHERE name = ?")
+    public User findByUsername(String username) {
+        User user = database.establish()
+                            .query("SELECT * FROM users WHERE name = ?")
                             .addValue(1, username)
-                            .execute();
+                            .executeReturning()
+                            .asValue(User.class);
 
         database.close();
 
-        return exists;
+        return user;
     }
+
+    public boolean login(String username) {
+        User user = findByUsername(username);
+
+        return user != null;
+    }
+
 }

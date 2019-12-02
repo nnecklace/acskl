@@ -97,6 +97,17 @@ public class Database {
         return this;
     }
 
+    public <T extends Object & Model> T asValue(Class<T> model) {
+        List<T> values = asList(model);
+
+
+        if (values.isEmpty()) {
+            return null;
+        }
+
+        return values.get(0);
+    }
+
     public <T extends Object & Model> List<T> asList(Class<T> model) {
         if (result == null) {
             return new ArrayList<>();

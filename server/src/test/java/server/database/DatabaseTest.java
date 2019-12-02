@@ -137,6 +137,10 @@ public class DatabaseTest {
                                 .executeReturning()
                                 .asList(User.class);
         
+        User userInstance = k.query("SELECT * FROM users")
+                            .executeReturning()
+                            .asValue(User.class);
+
         k.query("DELETE FROM users WHERE name = ?")
             .addValue(1, UserService.RESERVED_USERNAME)
             .execute();
@@ -146,6 +150,7 @@ public class DatabaseTest {
         }).findFirst().orElse(null);
 
         assertTrue("Users list should not be empty", !users.isEmpty());
+        assertTrue("User instance should not be null", userInstance != null);
         assertTrue("Users list should contain test user entity", user != null);
     }
 
@@ -156,6 +161,16 @@ public class DatabaseTest {
         List<User> users = k.query("SELECT * FROM users")
                                 .asList(User.class);
 
-        assertTrue("Users list should be null", users != null);
+        assertTrue("Users list should be empty", users.isEmpty());
+    }
+
+    @Test
+    public void testFindOneEntity() throws SQLException {
+        Database k = db.establish();
+
+        User user = k.query("SELECT * FROM users")
+                        .asValue(User.class);
+
+        assertTrue("User should be null", user == null);
     }
 }
