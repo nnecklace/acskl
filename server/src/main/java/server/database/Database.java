@@ -20,7 +20,7 @@ import server.models.Model;
 
 // TODO: Remove println and add logger class to write to error file
 public class Database {
-    private String CONNECTION_STRING = "jdbc:sqlite:database.db";
+    private String CONNECTION_STRING = "jdbc:sqlite::resource:database.db";
     private Connection db;
     private PreparedStatement statement;
     private ResultSet result;
