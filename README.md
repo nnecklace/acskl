@@ -28,13 +28,19 @@ Make sure you are in the `server` directory for these commands to work.
 
 #### Database setup
 
-Create a sample database.
+Create a resources folder inside 
+
+```src/main```
+
+```mkdir resources```
+
+Create a sample database inside the resources folder.
 
 ```touch database.db``` 
 
 Setup database with migrations
 
-```sqlite3 database.db < migrations/migrations.sql``` 
+```sqlite3 database.db < ../../../migrations/migrations.sql``` 
 
 #### Compile & Run
 
@@ -68,10 +74,24 @@ Make sure you are in the `client` directory when running the following commands.
 
 ```mvn compile exec:java -Dexec.mainClass=client.App```
 
-#### Test
+#### Tests
 
-Run tests.
+Run tests
 
 ```mvn test```
 
-No jacoco reports can be generated for the `client` as the UI doesn't require it.
+To generate `jacoco` report install the agent with:
+
+```mvn jacoco:prepare-agent install```
+
+Generate report
+
+```mvn test jacoco:report``` 
+
+The UI code is skipped for jacoco.
+
+#### Checkstyle
+
+Run and generate checkstyle report
+
+```mvn jxr:jxr checkstyle:checkstyle```

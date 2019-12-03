@@ -6,13 +6,19 @@ Manual for setting up the server side of acskl. All the steps assume you are in 
 ### Database
 
 Before setting up the server. Make sure you have sqlite3 installed. 
-To start the server you first have to make sure you have the database setup. The server assumes a sqlite database. 
+To start the server you first have to make sure you have the database setup. The server assumes a sqlite database inside the projects resource folder.
+
+If the folder doesn't exist, you can create by first `cd src/main` then running 
+
+```mkdir resources && cd resources```
+
+Then:
 
 ```touch database.db``` 
 
-Will create a sample database (Note* make sure you are in the server directory when creating the database). After creating the database you have to run the migrations for the database. 
+Will create a sample database (Note* make sure you are in the resouce directory when creating the database). After creating the database you have to run the migrations for the database. 
 
-```sqlite3 database.db < migrations/migrations.sql``` 
+```sqlite3 database.db < ../../../migrations/migrations.sql``` 
 
 ### Setup & Run
 
