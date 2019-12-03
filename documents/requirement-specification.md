@@ -21,16 +21,16 @@ The application would have 2 _views_, login and chat. Users would be able to log
 ## Functionality
 
 ### Login view
-- User can create users on the message server
+- User can create users on the message server [Done]
   - Usernames are limited to 20 characters UTF-8 [Done]
-- User can login to the message server if the username exists
-  - No password required
-  - If username doesn't exist, a message will appear indicating that the username needs to be created
+- User can login to the message server if the username exists [Done]
+  - No password required [Done]
+  - If username doesn't exist, a message will appear indicating that the username needs to be created [Done]
 
 ### Chat view
 - User can send a message to the chat
   - Message are limited to 1000 characters [Done]
-  - Message will be added to the bottom of the list
+  - Message will be added to the bottom of the list [Done]
 - User can view messages on the chat
 - User can delete their own messages
 - User can slap other users with a trout
