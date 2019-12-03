@@ -14,7 +14,9 @@ Acskl -- _anagram for slack_ -- is a simple tcp server client chat application b
 
 ## Release
 
-[Server Release](https://github.com/nnecklace/acskl/releases)
+[Server Release](https://github.com/nnecklace/acskl/releases/tag/1.0.0)
+
+[Client Release](https://github.com/nnecklace/acskl/releases/tag/1.0.0-Client)
 
 ## Instructions
 
