@@ -11,4 +11,6 @@
 | 2    | TCP Server Setup               |
 | 2    | Architecture document          | 
 | 1    | Client UI Login page           |
-| 24   | sum                            |
+| 3    | Release making                 |
+| 3    | TCP integration with client    |
+| 30   | sum                            |
