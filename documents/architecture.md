@@ -39,6 +39,6 @@ The relationship of the whole architecture can be seen in the following diagram
 
 ### Login 
 
-Login works as follows. The above sequence is the return sequence.
+The following sequence flow dipicts a successful login, and it works as follows. The above sequence is the return sequence.
 
 <img src="https://raw.githubusercontent.com/nnecklace/acskl/master/documents/diagrams/login-sequence.png" width="800px"/>
