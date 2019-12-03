@@ -34,3 +34,11 @@ Each service will create or use their respective data models; _User_, _Message_.
 The relationship of the whole architecture can be seen in the following diagram
 
 <img src="https://raw.githubusercontent.com/nnecklace/acskl/master/documents/diagrams/architecture-relationship.png" width="300px"/>
+
+## Main Features
+
+### Login 
+
+Login works as follows. The above sequence is the return sequence.
+
+<img src="https://raw.githubusercontent.com/nnecklace/acskl/master/documents/diagrams/login-sequence.png" width="400px"/>
