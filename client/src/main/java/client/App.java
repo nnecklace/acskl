@@ -5,7 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.time.Instant;
 
+import client.models.Message;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -103,7 +105,7 @@ public class App extends Application {
         });
 
         ListView<String> list = new ListView<String>();
-        ObservableList<String> items = FXCollections.observableArrayList("Hello?", "Lol", "Ayy lmao");
+        ObservableList<String> items = FXCollections.observableArrayList();
         list.setItems(items);
 
         ScrollPane chatListContainer = new ScrollPane();
@@ -119,11 +121,14 @@ public class App extends Application {
         text.setMinWidth(330);
         Button send = new Button("Send");
         send.setMinWidth(70);
+
         send.setOnAction(e->{
+            communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + Instant.now().getEpochSecond() + ":" + 1);
+            Message message = communicator.getPayload(Message.class);
+            System.out.println(message);
             items.add(text.getText());
             text.setText("");
         });
-
 
         bottomActionsContainer.setAlignment(Pos.BOTTOM_CENTER);
         bottomActionsContainer.setMinWidth(400);
@@ -132,7 +137,7 @@ public class App extends Application {
         chatContainer.getChildren().addAll(logoutContainer, list, bottomActionsContainer);
         chatRoot.getChildren().add(chatContainer);
 
-        Scene chatScene = new Scene(chatRoot, 400, 450);
+        Scene chatScene = new Scene(chatRoot, 400, 500);
 
         login.setOnAction(ev -> {
             boolean yes = communicator.sendMessage("USER:LOGIN:" + textfield.getText());

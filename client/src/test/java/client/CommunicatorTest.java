@@ -1,6 +1,7 @@
 package client;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.DataOutput;
@@ -8,27 +9,35 @@ import java.io.DataOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import client.models.Message;
+
 public class CommunicatorTest {
     Communicator communicator;
 
-    class Message {
+    class M {
         String message;
-
-        public Message(String message) {
-            this.message = message;
-        }
     }
 
     @Before
     public void setUp() {
-        Message m = new Message("");
+        M m = new M() {
+        };
         DataOutput output = new DataOutput() {
             public void writeBytes(String s) {
-                m.message = s;
+                String[] splitted = s.split(":");
+                if ("MESSAGE".equals(splitted[0]) && "CREATE".equals(splitted[1])) {
+                    String[] message = Arrays.copyOfRange(splitted, 2, splitted.length);
+                    String newMessage = String.join("|", message).trim();
+
+                    m.message = splitted[0]+":"+splitted[1]+":1|"+newMessage;
+                } else {
+                    m.message = s;
+                }
             }
             public void writeShort() {
             }
@@ -74,6 +83,9 @@ public class CommunicatorTest {
                 if (m.message.contains("Sam")) {
                     return "S:" + m.message;
                 }
+                if (m.message.contains("MESSAGE:CREATE")) {
+                    return "S:" + m.message;
+                }
 
                 return "E:" + m.message; 
             }
@@ -82,14 +94,27 @@ public class CommunicatorTest {
     }
 
     @Test
-    public void testSuccessfullMessage() {
+    public void testSuccessfulMessage() {
         boolean expected = communicator.sendMessage("USER:CREATE:Sam");
         assertTrue("Message should have been successful", expected);
     }
 
     @Test
-    public void testUnSuccessfullMessage() {
+    public void testUnSuccessfulMessage() {
         boolean expected = communicator.sendMessage("USER:CREATE:William");
         assertTrue("Message should have been unsuccessful", !expected);
+    }
+
+    @Test
+    public void testSuccessfulCreateMessage() {
+        Message expected = new Message(1, "Hello", 2151251, 1);
+        boolean yes = communicator.sendMessage("MESSAGE:CREATE:Hello:2151251:1");
+        Message message = communicator.getPayload(Message.class);
+        if (!yes) fail("Message should have been created but failed!");
+        boolean equal = expected.getContent().equals(message.getContent()) && 
+                        expected.getId() == message.getId() && 
+                        expected.getUserId() == message.getUserId() &&
+                        expected.getTimestamp() == message.getTimestamp();
+        assertTrue("expected " + expected.toString() + " but got " + message.toString(), equal);
     }
 }
