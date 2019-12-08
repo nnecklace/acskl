@@ -34,4 +34,9 @@ public class Message implements Model {
     public int getUserId() {
         return userId;
     }
+
+    @Override
+    public String toString() {
+        return id + "|" + content + "|" + timestamp + "|" + userId;
+    }
 }

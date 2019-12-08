@@ -3,6 +3,7 @@ package server;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import server.services.MessageService;
 import server.services.UserService;
 import server.database.Database;
 import server.utils.Interceptor;
@@ -12,8 +13,10 @@ import java.io.*;
 public class App {
     public static void main(String[] args) throws IOException {
         ServerSocket welcomeSocket = new ServerSocket(6789);
-        UserService userService = new UserService(new Database());
-        Interceptor interceptor = new Interceptor(userService);
+        Database database = new Database();
+        UserService userService = new UserService(database);
+        MessageService messageService = new MessageService(database);
+        Interceptor interceptor = new Interceptor(userService, messageService);
 
         while (true) {
             System.out.println("Server listening on port 6789");

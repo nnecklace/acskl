@@ -20,7 +20,7 @@ import server.models.Model;
 
 // TODO: Remove println and add logger class to write to error file
 public class Database {
-    private String CONNECTION_STRING = "jdbc:sqlite::resource:database.db";
+    private static final String CONNECTION_STRING = "jdbc:sqlite::resource:database.db";
     private Connection db;
     private PreparedStatement statement;
     private ResultSet result;
@@ -65,24 +65,25 @@ public class Database {
         return this;
     }
 
-    // TODO: This might not be necessary
-    public boolean execute() {
+    public int execute() {
         try {
             if (statement != null) {
                 statement.execute();
                 ResultSet result = statement.getGeneratedKeys();
 
                 if (result == null) {
-                    return false;
+                    return 0;
                 }
 
-                return result.next();
+                result.next();
+
+                return result.getInt(1);
             }
         } catch (SQLException exception) {
             System.err.println("Could not perform query: " + exception.getMessage());
         }
   
-        return false;
+        return 0;
     }
 
     public Database executeReturning() {
@@ -100,7 +101,6 @@ public class Database {
     public <T extends Object & Model> T asValue(Class<T> model) {
         List<T> values = asList(model);
 
-
         if (values.isEmpty()) {
             return null;
         }
@@ -114,7 +114,7 @@ public class Database {
         } 
 
         List<T> values = new ArrayList<>();
-        
+
         try {
             ResultSetMetaData resultMetaData = result.getMetaData();
             Map<String, Object> entity = new HashMap<>();

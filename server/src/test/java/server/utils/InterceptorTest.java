@@ -9,6 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import server.database.Database;
+import server.models.Message;
+import server.models.User;
+import server.services.MessageService;
 import server.services.UserService;
 
 public class InterceptorTest {
@@ -30,62 +33,97 @@ public class InterceptorTest {
                 }
                 return false;
             }
-            public boolean create(String username) {
+            public User create(String username) {
                 if (!usernames.contains(username)) {
-                    return true;
+                    return new User(username);
                 }
-                return false;
+                return null;
             }
         }.start();
 
-        this.interceptor = new Interceptor(userServiceFake);
+        MessageService messageServiceFake = new MessageService(database) {
+            List<Message> messages;
+            public Message create(String content, int timestamp, int userId) {
+                if (userId == 0) return null;
+                return new Message(content, timestamp, userId);
+            }
+            public List<Message> getAll() {
+                messages = new ArrayList<>();
+                messages.add(new Message("ayy lmao", 5555, 1));
+                messages.add(new Message("lol", 123, 9));
+                return messages;
+            }
+        };
+
+        this.interceptor = new Interceptor(userServiceFake, messageServiceFake);
     }
 
     @Test
     public void testParseMessageDoesNothingOnNull() {
-        String expected = interceptor.parse(null);
-        assertTrue("Invalid message should be returned", "E:INVALID".equals(expected));
+        String actual = interceptor.parse(null);
+        assertTrue("Invalid message should be returned", "E:INVALID".equals(actual));
     }
 
     @Test
     public void testParseMessageDoesNothingOnEmptyString() {
-        String expected = interceptor.parse("");
-        assertTrue("Invalid message should be returned", "E:INVALID".equals(expected));
+        String actual = interceptor.parse("");
+        assertTrue("Invalid message should be returned", "E:INVALID".equals(actual));
     }
 
     @Test
     public void testParseMessageDoesNothingOnInvalidCommand() {
-        String expected = interceptor.parse("k:f:i:");
-        assertTrue("Invalid message should be returned", "E:INVALID".equals(expected));
+        String actual = interceptor.parse("k:f:i:");
+        assertTrue("Invalid message should be returned", "E:INVALID".equals(actual));
     }
 
     @Test
     public void testParseMessageDoesNothingOnEmptyAction() {
-        String expected = interceptor.parse("USER:insert");
-        assertTrue("Invalid message should be returned", "E:INVALID".equals(expected));
+        String actual = interceptor.parse("USER:insert");
+        assertTrue("Invalid message should be returned", "E:INVALID".equals(actual));
     }
 
     @Test
     public void testParseMessageCreateUser() {
-        String expected = interceptor.parse("USER:CREATE:Samuel");
-        assertTrue("Successful create user message should be returned", "S:USER:CREATE:Samuel".equals(expected));
+        String actual = interceptor.parse("USER:CREATE:Samuel");
+        assertTrue("Successful create user message should be returned", "S:USER:CREATE:0|Samuel".equals(actual));
     }
 
     @Test
     public void testParseMessageLoginUser() {
-        String expected = interceptor.parse("USER:LOGIN:William");
-        assertTrue("Successful login user message should be returned", "S:USER:LOGIN:William".equals(expected));
+        String actual = interceptor.parse("USER:LOGIN:William");
+        assertTrue("Successful login user message should be returned", "S:USER:LOGIN".equals(actual));
     }
 
     @Test
     public void testParseMessageCreateUserUnsuccessfully() {
-        String expected = interceptor.parse("USER:CREATE:William");
-        assertTrue("Successful create user message should be returned", "E:USER:CREATE:William".equals(expected));
+        String actual = interceptor.parse("USER:CREATE:William");
+        assertTrue("Successful create user message should be returned", "E:USER:CREATE".equals(actual));
     }
 
     @Test
     public void testParseMessageLoginUserUnsuccessfully() {
-        String expected = interceptor.parse("USER:LOGIN:Samuel");
-        assertTrue("Successful login user message should be returned", "E:USER:LOGIN:Samuel".equals(expected));
+        String actual = interceptor.parse("USER:LOGIN:Samuel");
+        assertTrue("Successful login user message should be returned", "E:USER:LOGIN".equals(actual));
+    }
+
+    @Test
+    public void testParseMessageCreateMessageSuccessfully() {
+        String expected = "S:MESSAGE:CREATE:0|ayy lmao|12444|4";
+        String actual = interceptor.parse("MESSAGE:CREATE:ayy lmao:12444:4");
+        assertTrue("Expected " + expected + " but got " + actual, expected.equals(actual));
+    }
+
+    @Test
+    public void testParseMessageCreateUnsuccessfully() {
+        String expected = "E:MESSAGE:CREATE";
+        String actual = interceptor.parse("MESSAGE:CREATE:ayy lmao:12444:0");
+        assertTrue("Expected " + expected + " but got " + actual, expected.equals(actual));
+    }
+
+    @Test
+    public void testParseMessageListSuccessfully() {
+        String expected = "S:MESSAGE:LIST:0|ayy lmao|5555|1:0|lol|123|9";
+        String actual = interceptor.parse("MESSAGE:LIST");
+        assertTrue("Expected " + expected + " but got " + actual, expected.equals(actual));
     }
 }

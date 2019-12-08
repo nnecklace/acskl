@@ -12,20 +12,33 @@ public class MessageService {
         this.database = database;
     }
 
-    public boolean create(Message message) {
-        if (message.getContent().length() > 1000) {
-            return false;
+    public Message create(String content, int timestamp, int userId) {
+        if (content.length() > 1000) {
+            return null;
         }
 
-        boolean created = database.establish()
+        int messageId = database.establish()
                                 .query("INSERT INTO messages (content,timestamp,userId) VALUES(?,?,?)")
-                                .addValue(1, message.getContent())
-                                .addValue(2, message.getTimestamp())
-                                .addValue(3, message.getUserId())
+                                .addValue(1, content)
+                                .addValue(2, timestamp)
+                                .addValue(3, userId)
                                 .execute();
+        
+        // 0 insert failed
+        if (messageId == 0) {
+            database.close();
+            return null;
+        }
+        
+        Message message = database.establish()
+                                  .query("SELECT * FROM messages WHERE id = ?")
+                                  .addValue(1, messageId)
+                                  .executeReturning()
+                                  .asValue(Message.class);
+
         database.close();
 
-        return created;
+        return message;
     }
 
     public List<Message> getAll() {

@@ -6,24 +6,34 @@ import server.models.User;
 public class UserService {
     private Database database;
     // Username is reserved for testing purposes
-    public static String RESERVED_USERNAME = "thundercougarfalconbird";
+    public static final String RESERVED_USERNAME = "thundercougarfalconbird";
 
     public UserService(Database database) {
         this.database = database;
     }
 
-    public boolean create(String username) {
+    public User create(String username) {
         if (RESERVED_USERNAME.equals(username)) {
-            return false;
+            return null;
         }
 
-        boolean created = database.establish()
-                            .query("INSERT INTO users (name) VALUES (?)")
-                            .addValue(1, username)
-                            .execute();
-        database.close();
+        int userId = database.establish()
+                             .query("INSERT INTO users (name) VALUES (?)")
+                             .addValue(1, username)
+                             .execute();
 
-        return created;
+        if (userId == 0) {
+            database.close();
+            return null;
+        }
+
+        User user = database.establish()
+                            .query("SELECT * FROM users WHERE id = ?")
+                            .addValue(1, userId)
+                            .executeReturning()
+                            .asValue(User.class);
+
+        return user;
     }
 
     public User findByUsername(String username) {

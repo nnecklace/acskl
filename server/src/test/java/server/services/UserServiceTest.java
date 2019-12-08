@@ -19,8 +19,10 @@ public class UserServiceTest {
     public void setUp() {
         Database db = new Database() {
             private List<String> usernames = new ArrayList<>();
-            private boolean willPass = false;
+            private int willPass;
             private boolean login = false;
+            private boolean fetching = false;
+            private boolean inserting = false;
             public Database start() {
                 usernames.add("Pekka");
                 usernames.add("Gabriel");
@@ -28,22 +30,28 @@ public class UserServiceTest {
             }
             public Database establish() { return this; }
             public Database query(String q) {
-                if (q.contains("SELECT * FROM")) login = true;
+                if (q.contains("SELECT * FROM") && !q.contains("id")) {
+                    login = true;
+                }
+                if (q.contains("id")) fetching = true;
+                if (q.contains("INSERT")) inserting = true;
                 return this; 
             }
             public <T> Database addValue(int p, T v) {
-                if (login) {
-                    willPass = usernames.contains(v);
-                } else {
-                    willPass = !usernames.contains(v);
+                if (!fetching) {
+                    if (login) {
+                        willPass = usernames.contains(v) ? 1 : 0;
+                    } else {
+                        willPass = !usernames.contains(v) ? 1 : 0;
+                    }
                 }
 
                 return this; 
             }
-            public boolean execute() { return willPass; }
+            public int execute() { return willPass; }
             public Database executeReturning() { return this; }
             public <T extends Object & Model> T asValue(Class<T> model) {
-                if (willPass) {
+                if (willPass > 0) {
                     return (T) new User("Gabriel");
                 }
 
@@ -56,23 +64,23 @@ public class UserServiceTest {
 
     @Test
     public void testCreateUserWithNewName() {
-        boolean a = u.create("Peter");
+        User a = u.create("Peter");
 
-        assertTrue("Username could not be created", a);
+        assertTrue("Username could not be created", a != null);
     }
 
     @Test
     public void testCreateUserWithExistingName() {
-        boolean a = u.create("Pekka");
+        User a = u.create("Pekka");
 
-        assertTrue("Username was created even though it existed before ", !a);
+        assertTrue("Username was created even though it existed before ", a == null);
     }
 
     @Test
     public void testUserShouldNotBeAbleToCreateUsernameThatIsReserved() {
-        boolean a = u.create(UserService.RESERVED_USERNAME);
+        User a = u.create(UserService.RESERVED_USERNAME);
 
-        assertTrue("Reserved username should not be able to be created", !a);
+        assertTrue("Reserved username should not be able to be created", a == null);
     }
 
     @Test

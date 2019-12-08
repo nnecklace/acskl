@@ -1,22 +1,29 @@
 package server.utils;
 
+import server.services.MessageService;
 import server.services.UserService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Interceptor {
     private UserService userService;
+    private MessageService messageService;
     private List<String> validCommands;
     private List<String> validActions;
     private String userCommand = "USER";
+    private String messageCommand = "MESSAGE";
+    private Object content;
 
-    public Interceptor(UserService userService) {
+    public Interceptor(UserService userService, MessageService messageService) {
         this.userService = userService;
+        this.messageService = messageService;
 
         validCommands = new ArrayList<>();
-        validCommands.add("USER");
+        validCommands.add(userCommand);
+        validCommands.add(messageCommand);
 
         validActions = new ArrayList<>();
         validActions.add("CREATE");
@@ -24,10 +31,11 @@ public class Interceptor {
         validActions.add("LOGIN");
     }
 
-    private String response(boolean success, String command, String action, String[] parameters) {
-        String message = command + ":" + action + ":" + String.join(":", parameters);
+    private String response(boolean success, String command, String action) { 
+        String message = command + ":" + action;
         if (success) {
-            return "S:" + message;
+            String content = getContent();
+            return "S:" + message + (content != null ? (":" + content) : "");
         }
 
         return "E:" + message;
@@ -39,9 +47,11 @@ public class Interceptor {
 
     private String performAction(String command, String action, String[] parameters) {
         boolean success = false;
+        Object payload = null;
+
         if (userCommand.equals(command)) {
             if ("CREATE".equals(action)) {
-                success = userService.create(parameters[0]);
+                payload = userService.create(parameters[0]);
             }
 
             if ("LOGIN".equals(action)) {
@@ -49,12 +59,50 @@ public class Interceptor {
             }
         }
 
+        if (messageCommand.equals(command)) {
+            if ("CREATE".equals(action)) {
+                payload = messageService.create(
+                    parameters[0], 
+                    Integer.parseInt(parameters[1]), 
+                    Integer.parseInt(parameters[2])
+                );
+            }
+
+            if ("LIST".equals(action)) {
+                payload = messageService.getAll();
+            }
+        }
+
+        if (payload != null) {
+            success = true;
+            setContent(payload);
+        }
+
         return response(
             success,
             command,
-            action,
-            parameters
+            action
         );
+    }
+
+    private String getContent() {
+        if (content instanceof List) {
+            List<Object> contents = (List) content;
+
+            List<String> values = contents.stream().map(i -> i.toString()).collect(Collectors.toList());
+
+            return String.join(":", values);
+        }
+        
+        if (content == null) {
+            return null;
+        } 
+
+        return content.toString();
+    }
+
+    private void setContent(Object content) {
+        this.content = content;
     }
 
     // input: USER:LOGIN:Simon

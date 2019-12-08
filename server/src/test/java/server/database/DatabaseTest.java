@@ -82,8 +82,8 @@ public class DatabaseTest {
 
     @Test
     public void testExecuteDoesNothingIfNoQueryExists() {
-        boolean no  = db.establish().execute();
-        assertTrue("No queries should have been executed", !no);
+        int no  = db.establish().execute();
+        assertTrue("No queries should have been executed", no == 0);
     }
 
     @Test
@@ -98,30 +98,29 @@ public class DatabaseTest {
         // ideally tests cases should be separeted but we need to execute these in precise order
         Database k = db.establish();
 
-        boolean a = k.query("INSERT INTO users (name) VALUES (?)")
+        int a = k.query("INSERT INTO users (name) VALUES (?)")
                         .addValue(1, UserService.RESERVED_USERNAME)
                         .execute();
 
-        assertTrue("User was not created", a);
+        assertTrue("User was not created", a > 0);
 
-        ResultSet r = k.query("SELECT * FROM users WHERE name = ?")
+        User r = k.query("SELECT * FROM users WHERE name = ?")
                             .addValue(1, UserService.RESERVED_USERNAME)
                             .executeReturning()
-                            .getResult();
+                            .asValue(User.class);
 
         if (r == null) {
             fail("User could not be retrieved");
         } else {
-            r.next();
-            String username = r.getString(2);
+            String username = r.getName();
             assertTrue("Test user was not successfully created or could not be found" , UserService.RESERVED_USERNAME.equals(username));
         }
 
-        boolean b = k.query("DELETE FROM users WHERE name = ?")
+        int b = k.query("DELETE FROM users WHERE name = ?")
                         .addValue(1, UserService.RESERVED_USERNAME)
                         .execute();
 
-        assertTrue("User not deleted", b);
+        assertTrue("User not deleted", b > 0);
 
     }
 
