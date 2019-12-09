@@ -3,10 +3,10 @@ package client.models;
 public class Message {
     private int id;
     private String content;
-    private int timestamp;
+    private long timestamp;
     private int userId;
 
-    public Message(int id, String content, int timestamp, int userId) {
+    public Message(int id, String content, long timestamp, int userId) {
         this.id = id;
         this.content = content;
         this.timestamp = timestamp;
@@ -21,7 +21,7 @@ public class Message {
         return content;
     }
 
-    public int getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 

@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import client.models.Message;
 import javafx.application.Application;
@@ -128,11 +130,12 @@ public class App extends Application {
         send.setMinWidth(70);
 
         send.setOnAction(e->{
-            communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + Instant.now().getEpochSecond() + ":" + 1);
+            long epoch = Instant.now().getEpochSecond();
+            communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + epoch + ":" + 1);
             Message message = communicator.getPayload(Message.class);
             Label messageText = new Label(message.getContent());
-            Date date = new Date(message.getTimestamp());
-            DateFormat df = new SimpleDateFormat("hh:mm:ss");
+            Date date = new Date(message.getTimestamp() * 1000);
+            DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
             Label dateText = new Label(df.format(date));
             StackPane messageContainer = new StackPane(messageText, dateText);
             StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
@@ -164,8 +167,8 @@ public class App extends Application {
                     for (Object o : messages) {
                         Message message = (Message) o;
                         Label messageText = new Label(message.getContent());
-                        Date date = new Date(message.getTimestamp());
-                        DateFormat df = new SimpleDateFormat("hh:mm:ss");
+                        Date date = new Date(message.getTimestamp() * 1000);
+                        DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
                         Label dateText = new Label(df.format(date));
                         StackPane messageContainer = new StackPane(messageText, dateText);
                         StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
