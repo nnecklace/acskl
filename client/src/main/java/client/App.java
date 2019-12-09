@@ -5,7 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 import client.models.Message;
@@ -22,6 +25,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -105,8 +109,8 @@ public class App extends Application {
             primaryStage.setScene(loginScene);
         });
 
-        ListView<String> list = new ListView<String>();
-        ObservableList<String> items = FXCollections.observableArrayList();
+        ListView<StackPane> list = new ListView<>();
+        ObservableList<StackPane> items = FXCollections.observableArrayList();
         list.setItems(items);
 
         ScrollPane chatListContainer = new ScrollPane();
@@ -126,7 +130,14 @@ public class App extends Application {
         send.setOnAction(e->{
             communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + Instant.now().getEpochSecond() + ":" + 1);
             Message message = communicator.getPayload(Message.class);
-            items.add(message.getContent());
+            Label messageText = new Label(message.getContent());
+            Date date = new Date(message.getTimestamp());
+            DateFormat df = new SimpleDateFormat("hh:mm:ss");
+            Label dateText = new Label(df.format(date));
+            StackPane messageContainer = new StackPane(messageText, dateText);
+            StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
+            StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
+            items.add(messageContainer);
             text.setText("");
         });
 
@@ -141,16 +152,26 @@ public class App extends Application {
 
         login.setOnAction(ev -> {
             boolean yes = communicator.sendMessage("USER:LOGIN:" + textfield.getText());
+
             if (yes) {
                 primaryStage.setScene(chatScene);
+                items.clear();
                 yes = communicator.sendMessage("MESSAGE:LIST");
 
                 if (yes) {
                     List<Object> messages = communicator.getPayload(List.class);
                     
                     for (Object o : messages) {
-                        Message m = (Message) o;
-                        items.add(m.getContent());
+                        Message message = (Message) o;
+                        Label messageText = new Label(message.getContent());
+                        Date date = new Date(message.getTimestamp());
+                        DateFormat df = new SimpleDateFormat("hh:mm:ss");
+                        Label dateText = new Label(df.format(date));
+                        StackPane messageContainer = new StackPane(messageText, dateText);
+                        StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
+                        StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
+
+                        items.add(messageContainer);
                     }
                 } else {
                     // set error message
