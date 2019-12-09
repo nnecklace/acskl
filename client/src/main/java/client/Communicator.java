@@ -57,10 +57,6 @@ public class Communicator {
         return (T) payload;
     }
 
-    public void flush() {
-        payload = null;
-    }
- 
     public boolean sendMessage(String message) {
         try {
             output.writeBytes(message + "\n"); 

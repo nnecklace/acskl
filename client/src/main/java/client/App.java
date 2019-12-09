@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.time.Instant;
+import java.util.List;
 
 import client.models.Message;
 import javafx.application.Application;
@@ -125,8 +126,7 @@ public class App extends Application {
         send.setOnAction(e->{
             communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + Instant.now().getEpochSecond() + ":" + 1);
             Message message = communicator.getPayload(Message.class);
-            System.out.println(message);
-            items.add(text.getText());
+            items.add(message.getContent());
             text.setText("");
         });
 
@@ -143,6 +143,20 @@ public class App extends Application {
             boolean yes = communicator.sendMessage("USER:LOGIN:" + textfield.getText());
             if (yes) {
                 primaryStage.setScene(chatScene);
+                yes = communicator.sendMessage("MESSAGE:LIST");
+
+                if (yes) {
+                    List<Object> messages = communicator.getPayload(List.class);
+                    
+                    for (Object o : messages) {
+                        Message m = (Message) o;
+                        items.add(m.getContent());
+                    }
+                } else {
+                    // set error message
+                }
+
+                labelMsg.setText("");
             } else {
                 labelMsg.setText("Could not login!");
                 labelMsg.setTextFill(Color.RED);
