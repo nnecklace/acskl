@@ -45,6 +45,8 @@ The following sequence flow dipicts a successful login, and it works as follows.
 
 ### Creating message
 
+<img src="https://raw.githubusercontent.com/nnecklace/acskl/master/documents/diagrams/create-message-sequence.png" width="800px"/>
+
 ## Main weaknesses
 
 ### Multi threading
