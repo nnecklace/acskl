@@ -44,3 +44,11 @@ Generating javadoc can be done with running:
 ```mvn javadoc:javadoc```
 
 The generated docs will be located in the `target/site/apidocs` folder.
+
+### Package
+
+Generating a jar file of the project can be done with the following command:
+
+```mvn package```
+
+The jar file will be located in the `target` folder. Note! There will be two jars generated, the correct one is the one without _original_ in the name.

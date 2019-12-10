@@ -75,6 +75,12 @@ Generate javadocs with:
 
 ```mvn javadoc:javadoc```
 
+#### Package
+
+Create a runnable jar with:
+
+```mvn package```
+
 ### Client
 
 Make sure you are in the `client` directory when running the following commands.
@@ -106,3 +112,9 @@ Run and generate checkstyle report
 Generate javadocs with:
 
 ```mvn javadoc:javadoc```
+
+#### Package
+
+Create a runnable jar with:
+
+```mvn package```
