@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Class is the gateway between the client and business logic.
+ * All communication between the client and server goes through this class
+ */
 public class Interceptor {
     private UserService userService;
     private MessageService messageService;
@@ -109,6 +113,17 @@ public class Interceptor {
     // input: USER:CREATE:Simon
     // input: MESSAGE:LIST
     // input: MESSAGE:CREATE:content:timestamp:Simon
+    /**
+     * Method tries parse all messages from the clients and do as requested.
+     * Method will return invalid response if an unknown message is sent to the communicator
+     * Valid messages are:
+     * input: USER:LOGIN:Simon
+     * input: USER:CREATE:Simon
+     * input: MESSAGE:LIST
+     * input: MESSAGE:CREATE:content:timestamp:Simon
+     * @param input the message that should be parsed
+     * @return The reponse message string or invalid message string
+     */
     public String parse(String input) {
         if (input == null) {
             return invalid();

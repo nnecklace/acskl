@@ -9,6 +9,11 @@ import java.util.List;
 
 import client.models.Message;
 
+/**
+ * Class acts as the official delegate between client and server.
+ * The class can be seen as a telnet client.
+ * Communicator takes input and sends it to the server and handles the responses given by the server.
+ */
 public class Communicator {
     private DataOutput output;
     private BufferedReader input;
@@ -57,6 +62,11 @@ public class Communicator {
         return (T) payload;
     }
 
+    /**
+     * Method sends messages to the server and blocks IO until a response has been recieved.
+     * @param message the message that should be sent to the server
+     * @return true if message was successfully interpreted by the server, otherwise false
+     */
     public boolean sendMessage(String message) {
         try {
             output.writeBytes(message + "\n"); 

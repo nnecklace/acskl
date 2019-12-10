@@ -18,13 +18,23 @@ import java.util.Map;
 
 import server.models.Model;
 
-// TODO: Remove println and add logger class to write to error file
+/**
+ * Class acts as the gateway between the database intergration
+ * and business logic. All database interactions are made with
+ * this class
+ */
 public class Database {
     private static final String CONNECTION_STRING = "jdbc:sqlite::resource:database.db";
     private Connection db;
     private PreparedStatement statement;
     private ResultSet result;
 
+    /**
+     * The method establishes a connection to the database
+     * and prints to std error if a connection cannot be made.
+     * Method has a hard dependency to jdbc DriverManager
+     * @return the current database instance
+     */
     public Database establish() {
         try {
             db = DriverManager.getConnection(CONNECTION_STRING);
@@ -35,6 +45,13 @@ public class Database {
         return this;
     }
 
+    /**
+     * Method prepares a query to be called to the database.
+     * Note, method does nothing if no connection has been established
+     * @see server.database.Database#establish()
+     * @param query the sql prepared query string
+     * @return the current instance of the database class
+     */
     public Database query(String query) {
         try {
             if (db != null) {
@@ -47,6 +64,15 @@ public class Database {
         return this;
     }
 
+    /**
+     * Method allows users to add parameters to the prepared query statement that
+     * is about to be called. If no query has been prepared method will print error to std err.
+     * Method allows for three generic value types to be added: String, Integer, and Long.
+     * @param <T> the generic value type to be added
+     * @param position the position of the added value. Positions start at 1.
+     * @param value the actual value to be added.
+     * @return the current instance of the database class.
+     */
     public <T> Database addValue(int position, T value) {
         try {
             if (statement != null) {
@@ -65,6 +91,11 @@ public class Database {
         return this;
     }
 
+    /**
+     * Method calls the current prepared sql query.
+     * Note, method will print error to std error if no sql query has been created.
+     * @return the id of the row that has recently been updated (deleted/inserted).
+     */
     public int execute() {
         try {
             if (statement != null) {
@@ -86,6 +117,12 @@ public class Database {
         return 0;
     }
 
+    /**
+     * Method calls the current query and adds all results of the query
+     * to the result property of the class
+     * Note, method will print error to std error if no sql query has been created.
+     * @return the current instance of the database class
+     */
     public Database executeReturning() {
         try {
             if (statement != null) {
@@ -98,6 +135,15 @@ public class Database {
         return this;
     }
 
+    /**
+     * Method returns the first element from the current result list.
+     * This method is called when only one row has been returned by
+     * The sql query.
+     * @see server.database.Database#asList()
+     * @param <T> The type we want the value to be cast too. Type has to implement the Model interface
+     * @param model The class type of the type we want to be returned
+     * @return The type we specified in T
+     */
     public <T extends Object & Model> T asValue(Class<T> model) {
         List<T> values = asList(model);
 
@@ -108,6 +154,13 @@ public class Database {
         return values.get(0);
     }
 
+    /**
+     * Method returns the rows returned by the sql query as a Java List.
+     * If results is null, an empty list will be returned.
+     * @param <T> The type we want the value to be cast too. Type has to implement the Model interface
+     * @param model The class type of the type we want to be returned
+     * @return List of the type we specified in T
+     */
     public <T extends Object & Model> List<T> asList(Class<T> model) {
         if (result == null) {
             return new ArrayList<>();
@@ -141,6 +194,10 @@ public class Database {
         return values;
     }
 
+    /**
+     * Method tries to gracefully close the connection to the database
+     * making sure that nothing remains open that would cause a memory leak of any kind.
+     */
     public void close() {
         try {
             if (result != null) {
