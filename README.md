@@ -57,11 +57,7 @@ Run tests
 
 ```mvn test```
 
-To generate `jacoco` report install the agent with:
-
-```mvn jacoco:prepare-agent install```
-
-Generate report
+Generate jacoco report
 
 ```mvn test jacoco:report``` 
 
@@ -70,6 +66,12 @@ Generate report
 Run and generate checkstyle report
 
 ```mvn jxr:jxr checkstyle:checkstyle```
+
+#### Javadoc
+
+Generate javadocs with:
+
+```mvn javadoc:javadoc```
 
 ### Client
 
@@ -85,11 +87,7 @@ Run tests
 
 ```mvn test```
 
-To generate `jacoco` report install the agent with:
-
-```mvn jacoco:prepare-agent install```
-
-Generate report
+Generate jacoco report
 
 ```mvn test jacoco:report``` 
 
@@ -100,3 +98,9 @@ The UI code is skipped for jacoco.
 Run and generate checkstyle report
 
 ```mvn jxr:jxr checkstyle:checkstyle```
+
+#### Javadoc
+
+Generate javadocs with:
+
+```mvn javadoc:javadoc```

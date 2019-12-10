@@ -38,11 +38,7 @@ Run all unit and integration test with the following command
 
 ### Jacoco report
 
-To generate `jacoco` first install the `jacoco:prepare-agent`
-
-```mvn jacoco:prepare-agent install```
-
-Then create a test coverage report with the following command
+To generate and create a test coverage report, run the following command
 
 ```mvn test jacoco:report``` 
 
@@ -58,3 +54,11 @@ Generate a checkstyle report with the following command
 ```mvn jxr:jxr checkstyle:checkstyle```
 
 A checkstyle report will be generated and can be found in `target/site/checkstyle.html`
+
+### Javadoc
+
+Generating javadoc can be done with running:
+
+```mvn javadoc:javadoc```
+
+The generated docs will be located in the `target/site/apidocs` folder.

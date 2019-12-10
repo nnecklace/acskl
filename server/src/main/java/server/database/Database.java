@@ -139,7 +139,6 @@ public class Database {
      * Method returns the first element from the current result list.
      * This method is called when only one row has been returned by
      * The sql query.
-     * @see server.database.Database#asList()
      * @param <T> The type we want the value to be cast too. Type has to implement the Model interface
      * @param model The class type of the type we want to be returned
      * @return The type we specified in T
