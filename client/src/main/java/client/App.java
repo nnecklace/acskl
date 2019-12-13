@@ -11,12 +11,19 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import client.models.Message;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -31,9 +38,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class App extends Application {
     Communicator communicator;
+    Runnable poll;
     @Override
     public void init() {
         try {
@@ -44,6 +53,21 @@ public class App extends Application {
         } catch (IOException exception) {
             System.err.println(exception.getMessage());
             System.exit(1);
+        }
+    }
+
+    private static void parseMessages(List<Object> messages, ObservableList<StackPane> items) {
+        for (Object o : messages) {
+            Message message = (Message) o;
+            Label messageText = new Label(message.getContent());
+            Date date = new Date(message.getTimestamp() * 1000);
+            DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
+            Label dateText = new Label(df.format(date));
+            StackPane messageContainer = new StackPane(messageText, dateText);
+            StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
+            StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
+
+            items.add(messageContainer);
         }
     }
 
@@ -159,23 +183,32 @@ public class App extends Application {
             if (yes) {
                 primaryStage.setScene(chatScene);
                 items.clear();
+                
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        System.out.println("Polling");
+                        boolean yes = communicator.sendMessage("MESSAGE:LIST");
+                        if (yes) {
+                            List<Object> messages = communicator.getPayload(List.class);
+                            if (messages.size() > items.size()) {
+                                items.clear();
+                                parseMessages(messages, items);
+                            }
+                        } else {
+                            System.out.println("Polling failed");
+                        }
+                    }
+                }));
+
+                timeline.setCycleCount(Timeline.INDEFINITE);
+                timeline.play();
+
                 yes = communicator.sendMessage("MESSAGE:LIST");
 
                 if (yes) {
                     List<Object> messages = communicator.getPayload(List.class);
-                    
-                    for (Object o : messages) {
-                        Message message = (Message) o;
-                        Label messageText = new Label(message.getContent());
-                        Date date = new Date(message.getTimestamp() * 1000);
-                        DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
-                        Label dateText = new Label(df.format(date));
-                        StackPane messageContainer = new StackPane(messageText, dateText);
-                        StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
-                        StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
-
-                        items.add(messageContainer);
-                    }
+                    parseMessages(messages, items);
                 } else {
                     // set error message
                 }
