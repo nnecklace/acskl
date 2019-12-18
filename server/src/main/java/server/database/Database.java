@@ -100,10 +100,6 @@ public class Database {
                 statement.execute();
                 ResultSet result = statement.getGeneratedKeys();
 
-                if (result == null) {
-                    return 0;
-                }
-
                 result.next();
 
                 return result.getInt(1);

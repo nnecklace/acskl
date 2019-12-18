@@ -34,6 +34,8 @@ public class ConnectionTest {
     public void setUp() throws IOException {
         System.setErr(new PrintStream(errContent));
         Socket s = new Socket() {
+            private int counter;
+            private boolean close;
             public InputStream getInputStream() {
                 return new InputStream(){
                     @Override
@@ -49,6 +51,14 @@ public class ConnectionTest {
                         
                     }
                 };
+            }
+            public void close() throws IOException {
+                if (counter > 0) throw new IOException("Error");
+                close = true;
+                counter++;
+            }
+            public boolean isClosed() {
+                return close;
             }
         };
         Database database = new Database() {};
@@ -106,9 +116,11 @@ public class ConnectionTest {
         BufferedReader reader = new BufferedReader(r) {
             int counter;
             public String readLine() throws IOException {
-                System.out.println("Counter: " + counter);
                 if (counter > 1) throw new IOException("Error");
-                if (counter > 0) return null;
+                if (counter > 0) {
+                    counter++;
+                    return null;
+                }
                 counter++;
                 return "USER:LOGIN:William";
             }
@@ -212,5 +224,19 @@ public class ConnectionTest {
     public void testRunExitsOnNull() {
         this.connection.run();
         assertTrue("Expected that connection would be closed on null message", this.connection.isClosed());
+    }
+
+    @Test
+    public void testRunThrowsIOException() {
+        this.connection.run();
+        this.connection.run();
+        assertTrue("Run should throw exception, but didn't", errContent.toString().contains("Could not get input stream from client: Error"));
+    }
+
+    @Test
+    public void testShutDownThrowsIOException() {
+        this.connection.run();
+        this.connection.run();
+        assertTrue("Shutdown should throw exception, but didn't", errContent.toString().contains("Could not close connection to client: Error"));
     }
 }

@@ -39,7 +39,7 @@ public class Interceptor {
         String message = command + ":" + action;
         if (success) {
             String content = getContent();
-            return "S:" + message + (content != null ? (":" + content) : "");
+            return "S:" + message + ":" + content;
         }
 
         return "E:" + message;
@@ -97,10 +97,6 @@ public class Interceptor {
 
             return String.join(":", values);
         }
-        
-        if (content == null) {
-            return null;
-        } 
 
         return content.toString();
     }

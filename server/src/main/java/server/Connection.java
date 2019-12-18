@@ -33,6 +33,7 @@ public class Connection extends Thread {
                 writer.writeBytes(response + "\n");
             } catch (IOException e) {
                 System.err.println("Could not get input stream from client: " + e.getMessage());
+                break;
             }
         }
         shutDown();
