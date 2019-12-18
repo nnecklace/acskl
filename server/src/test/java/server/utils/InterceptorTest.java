@@ -27,11 +27,11 @@ public class InterceptorTest {
                 usernames.add("William");
                 return this;
             }
-            public boolean login(String username) {
+            public User login(String username) {
                 if (usernames.contains(username)) {
-                    return true;
+                    return new User(username);
                 }
-                return false;
+                return null;
             }
             public User create(String username) {
                 if (!usernames.contains(username)) {
@@ -91,7 +91,7 @@ public class InterceptorTest {
     @Test
     public void testParseMessageLoginUser() {
         String actual = interceptor.parse("USER:LOGIN:William");
-        assertTrue("Successful login user message should be returned", "S:USER:LOGIN".equals(actual));
+        assertTrue("Successful login user message should be returned", "S:USER:LOGIN:0|William".equals(actual));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class InterceptorTest {
 
     @Test
     public void testParseMessageCreateMessageSuccessfully() {
-        String expected = "S:MESSAGE:CREATE:0|ayy lmao|12444|4";
+        String expected = "S:MESSAGE:CREATE:0|ayy lmao|12444|null";
         String actual = interceptor.parse("MESSAGE:CREATE:ayy lmao:12444:4");
         assertTrue("Expected " + expected + " but got " + actual, expected.equals(actual));
     }
@@ -122,7 +122,7 @@ public class InterceptorTest {
 
     @Test
     public void testParseMessageListSuccessfully() {
-        String expected = "S:MESSAGE:LIST:0|ayy lmao|5555|1:0|lol|123|9";
+        String expected = "S:MESSAGE:LIST:0|ayy lmao|5555|null:0|lol|123|null";
         String actual = interceptor.parse("MESSAGE:LIST");
         assertTrue("Expected " + expected + " but got " + actual, expected.equals(actual));
     }

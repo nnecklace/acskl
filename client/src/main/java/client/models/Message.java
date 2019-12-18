@@ -4,13 +4,13 @@ public class Message {
     private int id;
     private String content;
     private long timestamp;
-    private int userId;
+    private String author;
 
-    public Message(int id, String content, long timestamp, int userId) {
+    public Message(int id, String content, long timestamp, String author) {
         this.id = id;
         this.content = content;
         this.timestamp = timestamp;
-        this.userId = userId;
+        this.author = author;
     }
 
     public int getId() {
@@ -25,8 +25,13 @@ public class Message {
         return timestamp;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getAuthor() {
+        return author;
+    }
+
+    @Override
+    public String toString() {
+        return id + " " + content + " " + timestamp + " " + author;
     }
 
 }

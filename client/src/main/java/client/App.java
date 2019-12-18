@@ -11,12 +11,16 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import client.models.Message;
+import client.models.User;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -31,9 +35,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class App extends Application {
     Communicator communicator;
+    Runnable poll;
+    User user;    
+
     @Override
     public void init() {
         try {
@@ -44,6 +52,23 @@ public class App extends Application {
         } catch (IOException exception) {
             System.err.println(exception.getMessage());
             System.exit(1);
+        }
+    }
+
+    private static void parseMessages(List<Object> messages, ObservableList<StackPane> items) {
+        for (Object o : messages) {
+            Message message = (Message) o;
+            Label messageText = new Label(message.getAuthor() + ": " + message.getContent());
+            messageText.setPrefWidth(300);
+            messageText.setWrapText(true);
+            Date date = new Date(message.getTimestamp() * 1000);
+            DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
+            Label dateText = new Label(df.format(date));
+            StackPane messageContainer = new StackPane(messageText, dateText);
+            StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
+            StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
+
+            items.add(messageContainer);
         }
     }
 
@@ -109,7 +134,12 @@ public class App extends Application {
 
         logoutButton.setOnAction(e -> {
             primaryStage.setScene(loginScene);
+            user = null;
         });
+
+        HBox chatError = new HBox();
+        Label chatErrorMessage = new Label();
+        chatError.getChildren().add(chatErrorMessage);
 
         ListView<StackPane> list = new ListView<>();
         ObservableList<StackPane> items = FXCollections.observableArrayList();
@@ -129,19 +159,28 @@ public class App extends Application {
         Button send = new Button("Send");
         send.setMinWidth(70);
 
-        send.setOnAction(e->{
+        send.setOnAction(e -> {
             long epoch = Instant.now().getEpochSecond();
-            communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + epoch + ":" + 1);
-            Message message = communicator.getPayload(Message.class);
-            Label messageText = new Label(message.getContent());
-            Date date = new Date(message.getTimestamp() * 1000);
-            DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
-            Label dateText = new Label(df.format(date));
-            StackPane messageContainer = new StackPane(messageText, dateText);
-            StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
-            StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
-            items.add(messageContainer);
-            text.setText("");
+            boolean yes = communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + epoch + ":" + user.getId());
+            
+            if (yes) {
+                Message message = communicator.getPayload(Message.class);
+                Label messageText = new Label(message.getAuthor() + ": " + message.getContent());
+                messageText.setPrefWidth(300);
+                messageText.setWrapText(true);
+                Date date = new Date(message.getTimestamp() * 1000);
+                DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
+                Label dateText = new Label(df.format(date));
+                StackPane messageContainer = new StackPane(messageText, dateText);
+                StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
+                StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
+                items.add(messageContainer);
+                text.setText("");
+                chatErrorMessage.setText("");
+            } else {
+                chatErrorMessage.setText("Could not send message");
+                chatErrorMessage.setTextFill(Color.RED);
+            }
         });
 
         bottomActionsContainer.setAlignment(Pos.BOTTOM_CENTER);
@@ -159,27 +198,39 @@ public class App extends Application {
             if (yes) {
                 primaryStage.setScene(chatScene);
                 items.clear();
+                user = communicator.getPayload(User.class);
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        System.out.println("Polling");
+                        boolean yes = communicator.sendMessage("MESSAGE:LIST");
+                        if (yes) {
+                            List<Object> messages = communicator.getPayload(List.class);
+                            if (messages.size() > items.size()) {
+                                items.clear();
+                                parseMessages(messages, items);
+                            }
+                        } else {
+                            System.out.println("Polling failed");
+                        }
+                    }
+                }));
+
+                timeline.setCycleCount(Timeline.INDEFINITE);
+                timeline.play();
+
                 yes = communicator.sendMessage("MESSAGE:LIST");
 
                 if (yes) {
                     List<Object> messages = communicator.getPayload(List.class);
-                    
-                    for (Object o : messages) {
-                        Message message = (Message) o;
-                        Label messageText = new Label(message.getContent());
-                        Date date = new Date(message.getTimestamp() * 1000);
-                        DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
-                        Label dateText = new Label(df.format(date));
-                        StackPane messageContainer = new StackPane(messageText, dateText);
-                        StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
-                        StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
-
-                        items.add(messageContainer);
-                    }
+                    parseMessages(messages, items);
+                    chatErrorMessage.setText("");
                 } else {
-                    // set error message
+                    chatErrorMessage.setText("Could not list messages");
+                    chatErrorMessage.setTextFill(Color.RED);
                 }
 
+                textfield.setText("");
                 labelMsg.setText("");
             } else {
                 labelMsg.setText("Could not login!");
@@ -190,6 +241,7 @@ public class App extends Application {
         primaryStage.setScene(loginScene);
         primaryStage.show();
     }
+
     public static void main(String[] args) {
         launch(args);
     }

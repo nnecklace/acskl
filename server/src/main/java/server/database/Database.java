@@ -80,8 +80,6 @@ public class Database {
                     statement.setString(position, (String) value);
                 } else if (value instanceof Integer) {
                     statement.setInt(position, (Integer) value);
-                } else if (value instanceof Long) {
-                    statement.setLong(position, (Long) value);
                 }
             }
         } catch (SQLException exception) {

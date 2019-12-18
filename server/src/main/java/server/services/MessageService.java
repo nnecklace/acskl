@@ -29,28 +29,35 @@ public class MessageService {
             return null;
         }
 
-        int messageId = database.establish()
-                                .query("INSERT INTO messages (content,timestamp,userId) VALUES(?,?,?)")
-                                .addValue(1, content)
-                                .addValue(2, timestamp)
-                                .addValue(3, userId)
-                                .execute();
-        
+        int messageId = insert(content, timestamp, userId);
+
         // 0 insert failed
         if (messageId == 0) {
             database.close();
             return null;
         }
-        
-        Message message = database.establish()
-                                  .query("SELECT * FROM messages WHERE id = ?")
-                                  .addValue(1, messageId)
-                                  .executeReturning()
-                                  .asValue(Message.class);
+
+        Message message = get(messageId);
 
         database.close();
-
         return message;
+    }
+
+    private int insert(String content, int timestamp, int userId) {
+        return database.establish()
+                    .query("INSERT INTO messages (content,timestamp,userId) VALUES(?,?,?)")
+                    .addValue(1, content)
+                    .addValue(2, timestamp)
+                    .addValue(3, userId)
+                    .execute();
+    }
+
+    private Message get(int id) {
+        return database.establish()
+                    .query("SELECT *, name FROM messages INNER JOIN users ON messages.userId = users.id WHERE messages.id = ?")
+                    .addValue(1, id)
+                    .executeReturning()
+                    .asValue(Message.class);
     }
 
     /**
@@ -59,7 +66,7 @@ public class MessageService {
      */
     public List<Message> getAll() {
         List<Message> messages = database.establish()
-                                        .query("SELECT * FROM messages")
+                                        .query("SELECT *, name FROM messages INNER JOIN users ON messages.userId = users.id")
                                         .executeReturning()
                                         .asList(Message.class);
         database.close();

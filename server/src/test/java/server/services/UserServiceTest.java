@@ -85,16 +85,16 @@ public class UserServiceTest {
 
     @Test
     public void testLoginWithExistingName() {
-        boolean a = u.login("Gabriel");
+        User a = u.login("Gabriel");
 
-        assertTrue("User could not login with valid username", a);
+        assertTrue("User could not login with valid username", a.getName().equals("Gabriel"));
     }
 
     @Test
     public void testLoginWithNonExistingName() {
-        boolean a = u.login("Simon");
+        User a = u.login("Simon");
 
-        assertTrue("User could login with invalid username", !a);
+        assertTrue("User could login with invalid username", a == null);
     }
 
     @Test

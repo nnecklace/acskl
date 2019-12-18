@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import client.models.Message;
+import client.models.User;
 
 /**
  * Class acts as the official delegate between client and server.
@@ -30,8 +31,13 @@ public class Communicator {
             Integer.parseInt(contents[0]),
             contents[1], 
             Integer.parseInt(contents[2]),
-            Integer.parseInt(contents[3]) 
+            contents[3]
         );
+    }
+
+    private User parseUser(String details) {
+        String[] userDetails = details.split("\\|");
+        return new User(Integer.parseInt(userDetails[0]), userDetails[1]);
     }
 
     private List<Message> parseMessage(String[] contents) {
@@ -40,7 +46,7 @@ public class Communicator {
         for (String content: contents) {
             messages.add(parseMessage(content));
         }
-    
+
         return messages;
     }
 
@@ -54,6 +60,13 @@ public class Communicator {
                 payload = parseMessage(parameters[0]);
             } else {
                 payload = parseMessage(parameters);
+            }
+        }
+
+        if ("USER".equals(command)) {
+            if ("LOGIN".equals(action)) {
+                String[] parameters = Arrays.copyOfRange(response, 3, response.length);
+                payload = parseUser(parameters[0]);
             }
         }
     }

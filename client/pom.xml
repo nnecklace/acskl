@@ -49,6 +49,7 @@
           <configuration>
             <excludes>
               <exclude>client/App.*</exclude>
+              <exclude>client/App$1.*</exclude>
             </excludes>
           </configuration>  
           <executions>

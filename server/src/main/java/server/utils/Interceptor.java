@@ -59,7 +59,7 @@ public class Interceptor {
             }
 
             if ("LOGIN".equals(action)) {
-                success = userService.login(parameters[0]);
+                payload = userService.login(parameters[0]);
             }
         }
 
@@ -109,10 +109,6 @@ public class Interceptor {
         this.content = content;
     }
 
-    // input: USER:LOGIN:Simon
-    // input: USER:CREATE:Simon
-    // input: MESSAGE:LIST
-    // input: MESSAGE:CREATE:content:timestamp:Simon
     /**
      * Method tries parse all messages from the clients and do as requested.
      * Method will return invalid response if an unknown message is sent to the communicator

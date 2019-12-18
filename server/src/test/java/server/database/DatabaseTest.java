@@ -3,8 +3,9 @@ package server.database;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.sql.ParameterMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -18,14 +19,18 @@ import server.models.User;
 
 public class DatabaseTest {
     private Database db;
+    private final PrintStream originalErr = System.err;
+    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     @Before
     public void setUp(){
         this.db = new Database();
+        System.setErr(new PrintStream(errContent));
     }
 
     @After
     public void tearDown() {
         db.close();
+        System.setErr(originalErr);
     }
 
     @Test
