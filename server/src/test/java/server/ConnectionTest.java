@@ -1,16 +1,10 @@
 package server;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,7 +29,6 @@ public class ConnectionTest {
     private Connection connection;
     private final PrintStream originalErr = System.err;
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-    private BufferedReader mockedReader;
 
     @Before
     public void setUp() throws IOException {
@@ -66,11 +59,11 @@ public class ConnectionTest {
                 usernames.add("William");
                 return this;
             }
-            public boolean login(String username) {
+            public User login(String username) {
                 if (usernames.contains(username)) {
-                    return true;
+                    return new User(username);
                 }
-                return false;
+                return null;
             }
             public User create(String username) {
                 if (!usernames.contains(username)) {
@@ -112,7 +105,9 @@ public class ConnectionTest {
 
         BufferedReader reader = new BufferedReader(r) {
             int counter;
-            public String readLine() {
+            public String readLine() throws IOException {
+                System.out.println("Counter: " + counter);
+                if (counter > 1) throw new IOException("Error");
                 if (counter > 0) return null;
                 counter++;
                 return "USER:LOGIN:William";
@@ -217,15 +212,5 @@ public class ConnectionTest {
     public void testRunExitsOnNull() {
         this.connection.run();
         assertTrue("Expected that connection would be closed on null message", this.connection.isClosed());
-    }
-
-    @Test
-    public void testIOExceptionToBeThrownWillReading() throws IOException {
-        this.connection.run();
-
-        String expected = "Could not get input stream from client: Error";
-        String actual = errContent.toString();
-
-        assertTrue("Expected error to be " + expected + "  but was " + actual, expected.equals(actual));        
     }
 }

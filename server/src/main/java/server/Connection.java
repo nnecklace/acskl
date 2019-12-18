@@ -25,16 +25,20 @@ public class Connection extends Thread {
                 String input = reader.readLine();
                 System.out.println(input + " recevied");
 
-                if (input == null) break;
+                if (input == null) {
+                    break;
+                }
 
                 String response = interceptor.parse(input);
-
                 writer.writeBytes(response + "\n");
             } catch (IOException e) {
                 System.err.println("Could not get input stream from client: " + e.getMessage());
             }
         }
+        shutDown();
+    }
 
+    private void shutDown() {
         try {
             connection.close();
         } catch (IOException e) {

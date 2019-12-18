@@ -6,6 +6,7 @@ public class Message implements Model {
     // Unix timestamp
     private long timestamp;
     private int userId;
+    private String name;
 
     public Message(){}
 
@@ -35,8 +36,12 @@ public class Message implements Model {
         return userId;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
-        return id + "|" + content + "|" + timestamp + "|" + userId;
+        return id + "|" + content + "|" + timestamp + "|" + name;
     }
 }

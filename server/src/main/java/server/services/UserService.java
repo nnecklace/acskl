@@ -70,10 +70,8 @@ public class UserService {
      * @param username the username that is trying to login
      * @return true if a user with the given username is found, otherwise false.
      */
-    public boolean login(String username) {
-        User user = findByUsername(username);
-
-        return user != null;
+    public User login(String username) {
+        return findByUsername(username);
     }
 
 }

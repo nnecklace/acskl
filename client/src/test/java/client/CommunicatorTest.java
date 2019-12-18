@@ -5,8 +5,6 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -17,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import client.models.Message;
+import client.models.User;
 
 public class CommunicatorTest {
     Communicator communicator;
@@ -88,7 +87,16 @@ public class CommunicatorTest {
         };
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in)){
             public String readLine() {
-                if (m.message.contains("Sam") || m.message.contains("MESSAGE:CREATE") || m.message.contains("MESSAGE:LIST")) {
+                if (m.message.contains("MESSAGE:CREATE") || m.message.contains("MESSAGE:LIST")) {
+                    return "S:" + m.message;
+                }
+
+                if (m.message.contains("Sam")) {
+                    if (m.message.contains("LOGIN")) {
+                        String begin = m.message.substring(0,11);
+                        String end = m.message.substring(11);
+                        m.message = begin + "1|" + end;
+                    }
                     return "S:" + m.message;
                 }
 
@@ -112,22 +120,22 @@ public class CommunicatorTest {
 
     @Test
     public void testSuccessfulCreateMessage() {
-        Message expected = new Message(1, "Hello", 2151251, 1);
-        boolean yes = communicator.sendMessage("MESSAGE:CREATE:Hello:2151251:1");
+        Message expected = new Message(1, "Hello", 2151251, "Simon");
+        boolean yes = communicator.sendMessage("MESSAGE:CREATE:Hello:2151251:Simon");
         Message message = communicator.getPayload(Message.class);
         if (!yes) fail("Message should have been created but failed!");
         boolean equal = expected.getContent().equals(message.getContent()) && 
                         expected.getId() == message.getId() && 
-                        expected.getUserId() == message.getUserId() &&
+                        expected.getAuthor().equals(message.getAuthor()) &&
                         expected.getTimestamp() == message.getTimestamp();
         assertTrue("expected " + expected.toString() + " but got " + message.toString(), equal);
     }
 
     @Test
     public void testSuccessfulListMessage() {
-        Message m1 = new Message(2, "Hello!", 5325223, 1);
-        Message m2 = new Message(3, "World!", 3555552, 2);
-        Message m3 = new Message(3, "Fudge!", 3523525, 3);
+        Message m1 = new Message(2, "Hello!", 5325223, "Simon");
+        Message m2 = new Message(3, "World!", 3555552, "Sam");
+        Message m3 = new Message(3, "Fudge!", 3523525, "William");
         List<Message> messages = new ArrayList<>();
         messages.add(m1);
         messages.add(m2);
@@ -154,12 +162,24 @@ public class CommunicatorTest {
             if (!expectedM.getContent().equals(actualM.getContent()) ||
                 expectedM.getId() == actualM.getId() ||
                 expectedM.getTimestamp() == actualM.getTimestamp() ||
-                expectedM.getUserId() == actualM.getUserId()) {
+                expectedM.getAuthor().equals(actualM.getAuthor())) {
                     same = false;
                     break;
                 }
         }
 
         assertTrue("Messages did not match with expected message", !same);
+    }
+
+    @Test
+    public void testSuccessfulLogin() {
+        User expected = new User(1, "Sam");
+        boolean yes = communicator.sendMessage("USER:LOGIN:Sam");
+
+        if (!yes) fail("Login failed but shouldn't have!");
+
+        User actual = communicator.getPayload(User.class);
+
+        assertTrue("Login user did not match with expected! ", (!expected.getName().equals(actual.getName()) || expected.getId() != actual.getId()));
     }
 }

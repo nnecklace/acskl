@@ -11,15 +11,12 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import client.models.Message;
+import client.models.User;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -43,6 +40,8 @@ import javafx.util.Duration;
 public class App extends Application {
     Communicator communicator;
     Runnable poll;
+    User user;    
+
     @Override
     public void init() {
         try {
@@ -59,7 +58,9 @@ public class App extends Application {
     private static void parseMessages(List<Object> messages, ObservableList<StackPane> items) {
         for (Object o : messages) {
             Message message = (Message) o;
-            Label messageText = new Label(message.getContent());
+            Label messageText = new Label(message.getAuthor() + ": " + message.getContent());
+            messageText.setPrefWidth(300);
+            messageText.setWrapText(true);
             Date date = new Date(message.getTimestamp() * 1000);
             DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
             Label dateText = new Label(df.format(date));
@@ -133,7 +134,12 @@ public class App extends Application {
 
         logoutButton.setOnAction(e -> {
             primaryStage.setScene(loginScene);
+            user = null;
         });
+
+        HBox chatError = new HBox();
+        Label chatErrorMessage = new Label();
+        chatError.getChildren().add(chatErrorMessage);
 
         ListView<StackPane> list = new ListView<>();
         ObservableList<StackPane> items = FXCollections.observableArrayList();
@@ -153,19 +159,28 @@ public class App extends Application {
         Button send = new Button("Send");
         send.setMinWidth(70);
 
-        send.setOnAction(e->{
+        send.setOnAction(e -> {
             long epoch = Instant.now().getEpochSecond();
-            communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + epoch + ":" + 1);
-            Message message = communicator.getPayload(Message.class);
-            Label messageText = new Label(message.getContent());
-            Date date = new Date(message.getTimestamp() * 1000);
-            DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
-            Label dateText = new Label(df.format(date));
-            StackPane messageContainer = new StackPane(messageText, dateText);
-            StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
-            StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
-            items.add(messageContainer);
-            text.setText("");
+            boolean yes = communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + epoch + ":" + user.getId());
+            
+            if (yes) {
+                Message message = communicator.getPayload(Message.class);
+                Label messageText = new Label(message.getAuthor() + ": " + message.getContent());
+                messageText.setPrefWidth(300);
+                messageText.setWrapText(true);
+                Date date = new Date(message.getTimestamp() * 1000);
+                DateFormat df = new SimpleDateFormat("E, dd MMM HH:mm", Locale.getDefault());
+                Label dateText = new Label(df.format(date));
+                StackPane messageContainer = new StackPane(messageText, dateText);
+                StackPane.setAlignment(messageText, Pos.CENTER_LEFT);
+                StackPane.setAlignment(dateText, Pos.CENTER_RIGHT);
+                items.add(messageContainer);
+                text.setText("");
+                chatErrorMessage.setText("");
+            } else {
+                chatErrorMessage.setText("Could not send message");
+                chatErrorMessage.setTextFill(Color.RED);
+            }
         });
 
         bottomActionsContainer.setAlignment(Pos.BOTTOM_CENTER);
@@ -183,7 +198,7 @@ public class App extends Application {
             if (yes) {
                 primaryStage.setScene(chatScene);
                 items.clear();
-                
+                user = communicator.getPayload(User.class);
                 Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
@@ -209,10 +224,13 @@ public class App extends Application {
                 if (yes) {
                     List<Object> messages = communicator.getPayload(List.class);
                     parseMessages(messages, items);
+                    chatErrorMessage.setText("");
                 } else {
-                    // set error message
+                    chatErrorMessage.setText("Could not list messages");
+                    chatErrorMessage.setTextFill(Color.RED);
                 }
 
+                textfield.setText("");
                 labelMsg.setText("");
             } else {
                 labelMsg.setText("Could not login!");
@@ -223,6 +241,7 @@ public class App extends Application {
         primaryStage.setScene(loginScene);
         primaryStage.show();
     }
+
     public static void main(String[] args) {
         launch(args);
     }
