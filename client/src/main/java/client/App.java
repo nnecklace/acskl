@@ -160,6 +160,7 @@ public class App extends Application {
         send.setMinWidth(70);
 
         send.setOnAction(e -> {
+            if (text.getText().isEmpty()) return;
             long epoch = Instant.now().getEpochSecond();
             boolean yes = communicator.sendMessage("MESSAGE:CREATE:" + text.getText() + ":" + epoch + ":" + user.getId());
             
@@ -187,12 +188,13 @@ public class App extends Application {
         bottomActionsContainer.setMinWidth(400);
         bottomActionsContainer.getChildren().addAll(text, send);
 
-        chatContainer.getChildren().addAll(logoutContainer, list, bottomActionsContainer);
+        chatContainer.getChildren().addAll(logoutContainer, list, bottomActionsContainer, chatError);
         chatRoot.getChildren().add(chatContainer);
 
         Scene chatScene = new Scene(chatRoot, 400, 500);
 
         login.setOnAction(ev -> {
+            if (textfield.getText().isEmpty()) return;
             boolean yes = communicator.sendMessage("USER:LOGIN:" + textfield.getText());
 
             if (yes) {

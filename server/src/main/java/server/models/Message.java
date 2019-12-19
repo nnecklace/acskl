@@ -42,6 +42,6 @@ public class Message implements Model {
 
     @Override
     public String toString() {
-        return id + "|" + content + "|" + timestamp + "|" + name;
+        return getId() + "|" + getContent() + "|" + getTimestamp() + "|" + getName();
     }
 }
