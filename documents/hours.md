@@ -17,4 +17,8 @@
 | 2    | Refactoring backend                 |
 | 2    | Documenting architecture and manuals|
 | 1    | Javadocs                            |
-| 38   | sum                                 |
+| 6    | Concurrent client connections       |
+| 4    | Author name posted with message     |
+| 1    | Update tests and checkstyle         |
+| 1    | Update requirements specs           | 
+| 50   | sum                                 |

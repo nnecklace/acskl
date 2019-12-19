@@ -32,8 +32,6 @@ The application would have 2 _views_, login and chat. Users would be able to log
   - Message are limited to 1000 characters [Done]
   - Message will be added to the bottom of the list [Done]
 - User can view messages on the chat [Done]
-- User can delete their own messages
-- User can slap other users with a trout
 - User can scroll through the chat history [Done]
 - User can disconnect from the chat [Done]
 
