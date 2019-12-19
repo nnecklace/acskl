@@ -15,12 +15,14 @@ Client side doesn't perform any integration tests with a fake server or actual s
 ### Test coverage
 
 Server:
-<img src="https://raw.githubusercontent.com/nnecklace/acskl/master/documents/diagrams/test-coverage-server.png" width="400px"/>
+
+<img src="https://raw.githubusercontent.com/nnecklace/acskl/master/documents/diagrams/test-coverage-server.png" width="800px"/>
 
 Server side test coverage is at about 90%. The missing 10% is in `Database.java` where the missing branches are edge cases where the database connection cannot be established and queries fail. This proved to be extremely and unexpectedly difficult to test and was left out.
 
 Client:
-<img src="https://raw.githubusercontent.com/nnecklace/acskl/master/documents/diagrams/test-coverage-client.png" width="400px"/>
+
+<img src="https://raw.githubusercontent.com/nnecklace/acskl/master/documents/diagrams/test-coverage-client.png" width="800px"/>
 
 Client side test coverage is almost 100%. One missing branch is when the connection cannot communicate with server and an exception is thrown. This was also extremely difficult to test in a reliable way and was therefore left out.
 
