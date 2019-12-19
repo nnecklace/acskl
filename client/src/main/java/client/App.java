@@ -202,7 +202,6 @@ public class App extends Application {
                 Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        System.out.println("Polling");
                         boolean yes = communicator.sendMessage("MESSAGE:LIST");
                         if (yes) {
                             List<Object> messages = communicator.getPayload(List.class);
