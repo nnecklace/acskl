@@ -60,3 +60,7 @@ At this point it is not known how many concurrent sessions the server can stand.
 ### UI
 
 All ui logic has been added into one method which makes it extermely hard to deal with. A possible fix would be to _clear the decks_ and rewrite the client as an electron app instead and use a proper ui library. The choice of javafx made the UI much harder to implement.
+
+### Security
+
+All communication is handled in plain text and anybody can listen in on the conversations. No encryption is used on the messages and no encrytpion on the communication either.
